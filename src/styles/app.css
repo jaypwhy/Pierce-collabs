@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@layer base {
+  html,
+  body {
+    @apply bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100;
+  }
+}
+
+/* ── Sip Drip arcade (/sip-drip) ─────────────────────────────────────────────
+   Hand-written rather than utility classes so the 8-bit skin survives whether
+   or not the class scanner has seen the route file yet. */
+.sd-page {
+  min-height: 100dvh;
+  background: #0b0d16;
+  color: #eaf4ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.sd-wrap { max-width: 768px; margin: 0 auto; padding: 0 20px 72px; }
+.sd-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+.sd-brand { color: #7cf0b8; font-size: 11px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; text-decoration: none; }
+.sd-nav { display: flex; gap: 16px; }
+.sd-nav a { color: #8d99b8; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; text-decoration: none; }
+.sd-nav a:hover { color: #eaf4ff; }
+.sd-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.sd-kicker { color: #ffd166; font-size: 10px; letter-spacing: .3em; text-transform: uppercase; margin: 0; }
+.sd-title { color: #7cf0b8; font-size: 26px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; margin: 8px 0 0; }
+.sd-sound { background: none; border: 2px solid #2a3247; color: #8d99b8; font: inherit; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; padding: 6px 12px; cursor: pointer; }
+.sd-sound:hover { border-color: #4a5a7d; color: #eaf4ff; }
+.sd-screen { margin-top: 16px; border: 2px solid #2a3247; background: #05070d; padding: 8px; box-shadow: 6px 6px 0 #000; }
+.sd-canvas { display: block; width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; image-rendering: pixelated; }
+.sd-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.sd-btn { border: 2px solid; font: inherit; font-size: 13px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; padding: 12px 10px; cursor: pointer; box-shadow: 4px 4px 0 #000; }
+.sd-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #000; }
+.sd-btn-sip { border-color: #7cf0b8; background: #7cf0b8; color: #0b0d16; }
+.sd-btn-drip { border-color: #ffd166; background: #ffd166; color: #0b0d16; }
+.sd-btn-off { border-color: #2a3247; background: #141a2b; color: #8d99b8; cursor: not-allowed; box-shadow: none; }
+.sd-hint { margin: 8px 0 0; color: #4a5a7d; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+.sd-note { margin: 12px 0 0; padding: 8px 12px; font-size: 12px; border-left: 4px solid; }
+.sd-note-ok { border-color: #7cf0b8; background: #0f1a22; color: #a9ffe0; }
+.sd-note-bad { border-color: #ff7b7b; background: #1a0f14; color: #ffb3b3; }
+.sd-cards { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
+@media (min-width: 640px) { .sd-cards { grid-template-columns: repeat(3, 1fr); } }
+.sd-card { border: 2px solid #2a3247; background: #0f1422; padding: 12px; }
+.sd-label { margin: 0; color: #6a7ba3; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; }
+.sd-value { margin: 4px 0 0; font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; color: #eaf4ff; }
+.sd-value-green { color: #7cf0b8; }
+.sd-value-amber { color: #ffd166; }
+.sd-sub { margin: 0; color: #4a5a7d; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+.sd-ladder { margin-top: 16px; border: 2px solid #2a3247; background: #0f1422; padding: 16px; }
+.sd-ladder-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.sd-bar { margin-top: 12px; height: 12px; border: 2px solid #2a3247; background: #0b0d16; }
+.sd-bar-fill { height: 100%; background: #2fbf87; }
+.sd-rungs { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.sd-rung { border: 2px solid #1b2237; padding: 12px; }
+.sd-rung-next { border-color: #ffd166; background: #151b2b; }
+.sd-rung-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.sd-rung-pts { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: #8d99b8; }
+.sd-rung-hit .sd-rung-pts { color: #7cf0b8; }
+.sd-rung-usd { font-size: 14px; font-weight: 700; color: #eaf4ff; font-variant-numeric: tabular-nums; }
+.sd-rung-bar { margin-top: 8px; height: 8px; background: #0b0d16; }
+.sd-rung-bar-hit { height: 100%; background: #7cf0b8; }
+.sd-rung-bar-next { height: 100%; background: #3d6b8f; }
+.sd-fine { margin: 12px 0 0; color: #4a5a7d; font-size: 10px; line-height: 1.6; letter-spacing: .14em; text-transform: uppercase; }
+.sd-copy { margin: 16px 0 0; color: #6a7ba3; font-size: 12px; line-height: 1.7; }
+.sd-foot { border-top: 2px solid #1b2237; padding: 24px 0; }
+.sd-foot p { max-width: 768px; margin: 0 auto; padding: 0 20px; color: #3a445e; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }

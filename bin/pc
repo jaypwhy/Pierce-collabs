@@ -1,0 +1,12 @@
+#!/bin/sh
+# `pc` — the Pierce Collabs CLI. The command itself is pc.ts beside this file.
+# Resolve through any symlink (e.g. /usr/local/bin/pc) so the real file is found.
+self="$0"
+while [ -L "$self" ]; do
+  target="$(readlink "$self")"
+  case "$target" in
+    /*) self="$target" ;;
+    *) self="$(dirname "$self")/$target" ;;
+  esac
+done
+exec bun run "$(dirname "$self")/pc.ts" "$@"
