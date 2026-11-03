@@ -8,6 +8,7 @@
  * than knowing each service.
  *
  *   pc services · balance · sip · drip · convert <points> · ladder · art list
+ *   pc morbraii nodes · pc morbraii encode "MIRACLE" · pc morbraii schedule "MIRACLE"
  *   pc ruhbi ledger  (planned — says so, exits 3)
  *
  * Flags: --json, --api <url>, --help. Exit: 0 ok · 1 error · 2 bad usage · 3 not connected.
@@ -31,7 +32,20 @@ type Flags = {
   values: Record<string, string>;
 };
 
-const VALUE_FLAGS = new Set(["api", "points", "note", "name", "media", "thumb", "body"]);
+const VALUE_FLAGS = new Set([
+  "api",
+  "points",
+  "note",
+  "name",
+  "media",
+  "thumb",
+  "body",
+  "text",
+  "profile",
+  "node",
+  "wpm",
+  "unit",
+]);
 
 class UsageError extends Error {}
 
@@ -195,13 +209,43 @@ const COMMANDS: Command[] = [
     summary: "Planned — the RUHBI ledger does not exist yet.",
   },
   {
+    words: ["morbraii", "nodes"],
+    method: "GET",
+    path: "/api/v1/morbraii/nodes",
+    service: "morbraii",
+    action: "nodes",
+    usage: "pc morbraii nodes",
+    summary: "What Morbraii can output — every node, what it carries and its limit.",
+  },
+  {
+    words: ["morbraii", "encode"],
+    method: "POST",
+    path: "/api/v1/morbraii/encode",
+    service: "morbraii",
+    action: "encode",
+    usage:
+      'pc morbraii encode "TEXT" [--profile standard|morbrai] [--node vibration|light|tone|braille|handshapes|text] [--wpm 5|8|12] [--unit 100|150|200|240]',
+    summary: "A message in: Morse, Braille cells, pitches, handshapes and the timed schedule out.",
+    body: (flags, rest) => morbraiiBody("encode", flags, rest),
+  },
+  {
+    words: ["morbraii", "schedule"],
+    method: "POST",
+    path: "/api/v1/morbraii/schedule",
+    service: "morbraii",
+    action: "schedule",
+    usage: 'pc morbraii schedule "TEXT" [--profile standard|morbrai] [--wpm 5|8|12] [--unit 100|150|200|240]',
+    summary: "The timed element list — when every dot and dash sounds and which gap follows it.",
+    body: (flags, rest) => morbraiiBody("schedule", flags, rest),
+  },
+  {
     words: ["morbraii", "identity"],
     method: "GET",
     path: "/api/v1/morbraii/identity",
     service: "morbraii",
     action: "identity",
     usage: "pc morbraii identity",
-    summary: "Planned — identity is Morbraii's job and Morbraii does not exist yet.",
+    summary: "Planned — Morbraii's identity layer is not built yet.",
   },
   {
     words: ["mission", "complete"],
@@ -238,6 +282,18 @@ function parseJsonFlag(flags: Flags): Record<string, unknown> {
   } catch {
     throw new UsageError("--body must be a JSON object.");
   }
+}
+
+/** The body Morbraii's encode and schedule both take: text plus the grid. */
+function morbraiiBody(action: string, flags: Flags, rest: string[]): Record<string, unknown> {
+  const text = rest.join(" ").trim() || flags.values.text;
+  if (!text) throw new UsageError(`${action} needs text: pc morbraii ${action} "MIRACLE"`);
+  const body: Record<string, unknown> = { text };
+  if (flags.values.profile) body.profile = flags.values.profile;
+  if (flags.values.node) body.node = flags.values.node;
+  if (flags.values.wpm !== undefined) body.wpm = Number(flags.values.wpm);
+  if (flags.values.unit !== undefined) body.unitMs = Number(flags.values.unit);
+  return body;
 }
 
 function findCommand(words: string[]): Command | undefined {
@@ -336,8 +392,87 @@ function formatArtSaved(data: any): string {
   return [data.message ?? "Saved.", `${data.piece?.name ?? "Piece"} · points ${count(data.points)}`].join("\n");
 }
 
+function formatMorbraiiNodes(data: any): string {
+  const lines = [
+    `${data.nodes.length} nodes — one message, whichever one a person can receive on`,
+    "",
+  ];
+  for (const node of data.nodes) {
+    lines.push(`${node.id.padEnd(11)} ${node.name}`);
+    lines.push(`${" ".repeat(12)}${node.output}`);
+    lines.push(`${" ".repeat(12)}carries: ${node.carries}`);
+    lines.push(`${" ".repeat(12)}limit:   ${node.limit}`);
+    lines.push("");
+  }
+  for (const profile of data.profiles) {
+    lines.push(`${profile.id.padEnd(11)} ${profile.label}`);
+    lines.push(`${" ".repeat(12)}${profile.detail}`);
+  }
+  return lines.join("\n");
+}
+
+function formatMorbraiiTimeline(elements: any[]): string[] {
+  return elements.map(
+    (el) =>
+      `  ${String(el.atMs).padStart(6)} ms  ${el.letter}  ${el.symbol === "." ? "·" : "▬"} ${String(el.durationMs).padStart(4)} ms` +
+      (el.gapAfter === "none"
+        ? "  no gap after"
+        : `  gap ${String(el.gapAfterMs).padStart(4)} ms (${el.gapAfter})`) +
+      `  ${el.hz} Hz`,
+  );
+}
+
+function formatMorbraiiSchedule(data: any): string {
+  const p = data.profile;
+  return [
+    `${data.text} · ${p.id} · unit ${p.unitMs} ms · ${p.wpm} wpm · ${data.elements.length} elements · ${data.totalMs} ms`,
+    `  dot ${p.dotMs} · dash ${p.dashMs} · element gap ${p.elementGapMs} · letter gap ${p.letterGapMs} · word gap ${p.wordGapMs}`,
+    "",
+    ...formatMorbraiiTimeline(data.elements),
+  ].join("\n");
+}
+
+function formatMorbraiiEncode(data: any): string {
+  const p = data.profile;
+  const lines = [
+    `${data.text} · ${p.label} · unit ${p.unitMs} ms · ${p.wpm} wpm · ${data.schedule.letters.length} letters · ${data.schedule.totalMs} ms · node ${data.node}`,
+    `  dot ${p.dotMs} · dash ${p.dashMs} · element gap ${p.elementGapMs} · letter gap ${p.letterGapMs} · word gap ${p.wordGapMs}`,
+    "",
+  ];
+  for (const letter of data.morse) {
+    const pitch = data.pitches.find((x: any) => x.letter === letter.letter);
+    const braille = data.braille.find((x: any) => x.letter === letter.letter);
+    const shape = data.handshapes.find((x: any) => x.letter === letter.letter);
+    lines.push(
+      `  ${letter.letter}  ${letter.morse.padEnd(5)} braille ${braille.dots.join("·").padEnd(11)} ${pitch.note.padEnd(3)} ${String(pitch.hz).padStart(7)} Hz` +
+        (shape?.motion ? `  (${shape.motion.toUpperCase()} — motion letter)` : ""),
+    );
+  }
+  lines.push("", ...formatMorbraiiTimeline(data.timeline));
+  const out = data.output;
+  if (data.node === "vibration") lines.push("", `  vibration pattern: [${out.pattern.join(", ")}] ms`);
+  if (data.node === "light") lines.push("", `  ${out.steps.length} light steps · colour sets: ${out.colourSets.map((c: any) => c.id).join(", ")}`);
+  if (data.node === "tone")
+    lines.push(
+      "",
+      `  pitches: ${out.pitches.map((x: any) => `${x.letter}=${x.note}`).join(" ")}`,
+      `  carrier: swell ${out.deliveries[1].swell} · dip ${out.deliveries[1].dipRatio} (${out.deliveries[1].dipDb} dB) · never silent`,
+    );
+  if (data.node === "braille")
+    lines.push("", `  cells: ${out.cells.map((c: any) => `${c.letter} ${c.dots.join("·")}`).join("   ")}`);
+  if (data.node === "handshapes")
+    lines.push("", `  handshapes: ${out.sequence.map((s: any) => s.letter).join(" ")}`);
+  if (data.node === "text") lines.push("", `  text: ${out.text}`);
+  return lines.join("\n");
+}
+
 function format(command: Command, data: any): string {
   if (command.service === "registry") return formatServices(data);
+  if (command.service === "morbraii") {
+    if (command.action === "nodes") return formatMorbraiiNodes(data);
+    if (command.action === "encode") return formatMorbraiiEncode(data);
+    if (command.action === "schedule") return formatMorbraiiSchedule(data);
+  }
   if (command.action === "balance") return formatBalance(data);
   if (command.action === "ladder") return formatLadder(data);
   if (command.action === "list") return formatPieces(data);
