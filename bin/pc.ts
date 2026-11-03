@@ -8,7 +8,7 @@
  * than knowing each service.
  *
  *   pc services · balance · sip · drip · convert <points> · ladder · art list
- *   pc ruhbi ledger  (planned — says so, exits 3)
+ *   pc ruhbi ledger [--limit] [--kind] · summary · verify
  *
  * Flags: --json, --api <url>, --help. Exit: 0 ok · 1 error · 2 bad usage · 3 not connected.
  */
@@ -31,7 +31,7 @@ type Flags = {
   values: Record<string, string>;
 };
 
-const VALUE_FLAGS = new Set(["api", "points", "note", "name", "media", "thumb", "body"]);
+const VALUE_FLAGS = new Set(["api", "points", "note", "name", "media", "thumb", "body", "limit", "kind"]);
 
 class UsageError extends Error {}
 
@@ -89,6 +89,8 @@ type Command = {
   action: string;
   usage: string;
   summary: string;
+  /** Query string for a GET that filters, e.g. ?limit=20&kind=convert. */
+  query?: (flags: Flags) => Record<string, string>;
   /** The request body for a POST, or undefined for a GET. */
   body?: (flags: Flags, rest: string[]) => Record<string, unknown>;
 };
@@ -191,8 +193,36 @@ const COMMANDS: Command[] = [
     path: "/api/v1/ruhbi/ledger",
     service: "ruhbi",
     action: "ledger",
-    usage: "pc ruhbi ledger",
-    summary: "Planned — the RUHBI ledger does not exist yet.",
+    usage: "pc ruhbi ledger [--limit 20] [--kind convert]",
+    summary: "Every movement in the RUHBI ledger, newest first.",
+    query: (flags) => {
+      const query: Record<string, string> = {};
+      if (flags.values.limit !== undefined) {
+        const limit = Number(flags.values.limit);
+        if (!Number.isInteger(limit) || limit < 1) throw new UsageError("--limit must be 1 or more.");
+        query.limit = String(limit);
+      }
+      if (flags.values.kind) query.kind = flags.values.kind;
+      return query;
+    },
+  },
+  {
+    words: ["ruhbi", "summary"],
+    method: "GET",
+    path: "/api/v1/ruhbi/summary",
+    service: "ruhbi",
+    action: "summary",
+    usage: "pc ruhbi summary",
+    summary: "Points issued, converted and settled, and the balance outstanding.",
+  },
+  {
+    words: ["ruhbi", "verify"],
+    method: "GET",
+    path: "/api/v1/ruhbi/verify",
+    service: "ruhbi",
+    action: "verify",
+    usage: "pc ruhbi verify",
+    summary: "Replay the ledger and check it adds up to the balance.",
   },
   {
     words: ["morbraii", "identity"],
@@ -336,8 +366,63 @@ function formatArtSaved(data: any): string {
   return [data.message ?? "Saved.", `${data.piece?.name ?? "Piece"} · points ${count(data.points)}`].join("\n");
 }
 
+function formatLedger(data: any): string {
+  if (!data.count) {
+    const filter = data.filter?.kind ? ` with kind "${data.filter.kind}"` : "";
+    return `No entries${filter} — the ledger starts with the next movement.`;
+  }
+  const heading = data.count === data.total
+    ? `${data.count} ${data.count === 1 ? "entry" : "entries"}`
+    : `${data.count} of ${data.total} entries`;
+  const lines = [heading, ""];
+  for (const entry of data.entries) {
+    const sign = entry.points >= 0 ? "+" : "";
+    const dollars = Number(entry.dollars) ? `  $${Number(entry.dollars).toLocaleString("en-US")}` : "";
+    lines.push(
+      `${entry.id}  ${entry.at.slice(0, 19).replace("T", " ")}  ${entry.kind.padEnd(8)} ` +
+        `${`${sign}${count(entry.points)}`.padStart(8)} pts  → ${count(entry.balanceAfter)}${dollars}`,
+    );
+    lines.push(`${" ".repeat(10)}${entry.memo} · ${entry.ref}`);
+  }
+  return lines.join("\n");
+}
+
+function formatSummary(data: any): string {
+  return [
+    "RUHBI ledger summary",
+    `  opening     ${count(data.openingPoints)} pts   (balance before the ledger existed)`,
+    `  issued      ${count(data.pointsIssued)} pts`,
+    `  converted   ${count(data.pointsConverted)} pts`,
+    `  adjusted    ${count(data.pointsAdjusted)} pts`,
+    `  settled     ${"$" + Number(data.dollarsSettled).toLocaleString("en-US")}`,
+    `  outstanding ${count(data.outstandingBalance)} pts`,
+    `  entries     ${data.entryCount}`,
+    data.firstAt ? `  span        ${data.firstAt.slice(0, 10)} → ${data.lastAt.slice(0, 10)}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function formatVerify(data: any): string {
+  return [
+    `${data.verified ? "verified" : "NOT verified"} — ${data.message}`,
+    `  entries     ${data.entryCount}`,
+    `  replayed    ${count(data.replayedBalance)} pts`,
+    `  account     ${count(data.currentBalance)} pts`,
+    `  settled     ${"$" + Number(data.dollarsSettled).toLocaleString("en-US")}`,
+    data.brokenLines ? `  unparsable  ${data.brokenLines} line(s)` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 function format(command: Command, data: any): string {
   if (command.service === "registry") return formatServices(data);
+  if (command.service === "ruhbi") {
+    if (command.action === "ledger") return formatLedger(data);
+    if (command.action === "summary") return formatSummary(data);
+    if (command.action === "verify") return formatVerify(data);
+  }
   if (command.action === "balance") return formatBalance(data);
   if (command.action === "ladder") return formatLadder(data);
   if (command.action === "list") return formatPieces(data);
@@ -378,7 +463,12 @@ function commandHelp(command: Command): string {
 }
 
 async function request(command: Command, flags: Flags, rest: string[]): Promise<Envelope> {
-  const url = `${flags.api.replace(/\/+$/, "")}${command.path}`;
+  let path = command.path;
+  if (command.query) {
+    const search = new URLSearchParams(command.query(flags)).toString();
+    if (search) path = `${path}?${search}`;
+  }
+  const url = `${flags.api.replace(/\/+$/, "")}${path}`;
   const init: RequestInit = {
     method: command.method,
     headers: { accept: "application/json" },

@@ -24,7 +24,7 @@ export type Envelope<T = unknown> =
 /** An envelope plus the HTTP status the route should answer with. */
 export type Reply<T = unknown> = { status: number; envelope: Envelope<T> };
 
-export type CallInput = { body: Record<string, unknown> };
+export type CallInput = { body: Record<string, unknown>; query: Record<string, string> };
 
 /**
  * One adapter per service. `call` is the only place that knows the service's

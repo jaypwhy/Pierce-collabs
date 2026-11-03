@@ -9,6 +9,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import { record } from "./ruhbi-ledger";
+
 /**
  * The Pi Algo — the bridge's one conversion rule:
  *   dollars = floor(π × 100 × points²)
@@ -25,7 +27,8 @@ export const MIN_CONVERT_POINTS = 1;
 export const DRIP_POINTS = 25;
 export const DRIP_COOLDOWN_MS = 60_000;
 
-const STORE_FILE = "/home/team/shared/upayu-account.json";
+const STORE_FILE =
+  process.env.UPUAY_ACCOUNT_FILE?.trim() || "/home/team/shared/upayu-account.json";
 const USER_ID = "pierce";
 const MAX_LEDGER = 40;
 const MAX_PIECES = 12;
@@ -141,12 +144,22 @@ async function writeAccount(account: Account): Promise<void> {
 
 let queue: Promise<unknown> = Promise.resolve();
 
-/** One writer at a time: read, mutate, write, hand back both. */
-function withAccount<T>(fn: (account: Account) => T): Promise<{ account: Account; result: T }> {
+/**
+ * One writer at a time: read, mutate, write, hand back both.
+ *
+ * `after` runs inside the same turn of the queue, once the account is on disk,
+ * so a movement's RUHBI ledger line is written in the order the balances were
+ * written and can never disagree with them.
+ */
+function withAccount<T>(
+  fn: (account: Account) => T,
+  after?: (account: Account, result: T) => Promise<void> | void,
+): Promise<{ account: Account; result: T }> {
   const run = queue.then(async () => {
     const account = await readAccount();
     const result = fn(account);
     await writeAccount(account);
+    if (after) await after(account, result);
     return { account, result };
   });
   queue = run.catch(() => undefined);
@@ -193,20 +206,33 @@ export async function sipPoints(input: {
   const kind: EntryKind = input.kind === "art" ? "art" : "sip";
   const note = (input.note ?? "").trim().slice(0, 120) || "Sip";
 
-  const { account, result } = await withAccount((account) => {
-    account.points += points;
-    account.lifetimePoints += points;
-    account.ledger.unshift({
-      id: newId(),
-      kind,
-      points,
-      dollars: 0,
-      note,
-      at: nowIso(),
-    });
-    account.ledger = account.ledger.slice(0, MAX_LEDGER);
-    return points;
-  });
+  const { account, result } = await withAccount(
+    (account) => {
+      account.points += points;
+      account.lifetimePoints += points;
+      account.ledger.unshift({
+        id: newId(),
+        kind,
+        points,
+        dollars: 0,
+        note,
+        at: nowIso(),
+      });
+      account.ledger = account.ledger.slice(0, MAX_LEDGER);
+      return points;
+    },
+    (account) =>
+      record({
+        account: account.id,
+        kind: kind === "art" ? "art" : "sip",
+        points,
+        dollars: 0,
+        balanceBefore: account.points - points,
+        balanceAfter: account.points,
+        ref: kind === "art" ? "art:save" : "sip-drip:sip",
+        memo: note,
+      }).then(() => undefined),
+  );
 
   return snapshot(account, { awarded: result, message: `+${result} points` });
 }
@@ -222,20 +248,33 @@ export async function dripPoints(): Promise<SnapshotWith> {
     };
   }
 
-  const { account } = await withAccount((account) => {
-    account.points += DRIP_POINTS;
-    account.lifetimePoints += DRIP_POINTS;
-    account.lastDripAt = nowIso();
-    account.ledger.unshift({
-      id: newId(),
-      kind: "drip",
-      points: DRIP_POINTS,
-      dollars: 0,
-      note: "Base income drip",
-      at: nowIso(),
-    });
-    account.ledger = account.ledger.slice(0, MAX_LEDGER);
-  });
+  const { account } = await withAccount(
+    (account) => {
+      account.points += DRIP_POINTS;
+      account.lifetimePoints += DRIP_POINTS;
+      account.lastDripAt = nowIso();
+      account.ledger.unshift({
+        id: newId(),
+        kind: "drip",
+        points: DRIP_POINTS,
+        dollars: 0,
+        note: "Base income drip",
+        at: nowIso(),
+      });
+      account.ledger = account.ledger.slice(0, MAX_LEDGER);
+    },
+    (account) =>
+      record({
+        account: account.id,
+        kind: "drip",
+        points: DRIP_POINTS,
+        dollars: 0,
+        balanceBefore: account.points - DRIP_POINTS,
+        balanceAfter: account.points,
+        ref: "sip-drip:drip",
+        memo: "Base income drip",
+      }).then(() => undefined),
+  );
 
   return snapshot(account, { awarded: DRIP_POINTS, message: `+${DRIP_POINTS} points, dripped` });
 }
@@ -261,19 +300,32 @@ export async function convertPoints(input: { points?: number }): Promise<Snapsho
   }
 
   const dollars = piAlgoDollars(points);
-  const { account } = await withAccount((account) => {
-    account.points -= points;
-    account.dollars += dollars;
-    account.ledger.unshift({
-      id: newId(),
-      kind: "convert",
-      points: -points,
-      dollars,
-      note: `${points} ${points === 1 ? "point" : "points"} → $${dollars.toLocaleString("en-US")}`,
-      at: nowIso(),
-    });
-    account.ledger = account.ledger.slice(0, MAX_LEDGER);
-  });
+  const { account } = await withAccount(
+    (account) => {
+      account.points -= points;
+      account.dollars += dollars;
+      account.ledger.unshift({
+        id: newId(),
+        kind: "convert",
+        points: -points,
+        dollars,
+        note: `${points} ${points === 1 ? "point" : "points"} → ${dollars.toLocaleString("en-US")}`,
+        at: nowIso(),
+      });
+      account.ledger = account.ledger.slice(0, MAX_LEDGER);
+    },
+    (account) =>
+      record({
+        account: account.id,
+        kind: "convert",
+        points: -points,
+        dollars,
+        balanceBefore: account.points + points,
+        balanceAfter: account.points,
+        ref: "upayu:convert",
+        memo: "Pi Algo conversion",
+      }).then(() => undefined),
+  );
 
   return snapshot(account, {
     awarded: points,
@@ -293,22 +345,35 @@ export async function saveArtWork(input: {
   const media = (input.media ?? "").trim().slice(0, 120) || "Mixed media";
   const thumb = typeof input.thumb === "string" ? input.thumb.slice(0, 400_000) : "";
 
-  const { account, result } = await withAccount((account) => {
-    const piece: ArtPiece = { id: newId(), name, media, points, at: nowIso(), thumb };
-    account.pieces = [piece, ...account.pieces].slice(0, MAX_PIECES);
-    account.points += points;
-    account.lifetimePoints += points;
-    account.ledger.unshift({
-      id: newId(),
-      kind: "art",
-      points,
-      dollars: 0,
-      note: name,
-      at: nowIso(),
-    });
-    account.ledger = account.ledger.slice(0, MAX_LEDGER);
-    return piece;
-  });
+  const { account, result } = await withAccount(
+    (account) => {
+      const piece: ArtPiece = { id: newId(), name, media, points, at: nowIso(), thumb };
+      account.pieces = [piece, ...account.pieces].slice(0, MAX_PIECES);
+      account.points += points;
+      account.lifetimePoints += points;
+      account.ledger.unshift({
+        id: newId(),
+        kind: "art",
+        points,
+        dollars: 0,
+        note: name,
+        at: nowIso(),
+      });
+      account.ledger = account.ledger.slice(0, MAX_LEDGER);
+      return piece;
+    },
+    (account, piece) =>
+      record({
+        account: account.id,
+        kind: "art",
+        points: piece.points,
+        dollars: 0,
+        balanceBefore: account.points - piece.points,
+        balanceAfter: account.points,
+        ref: "art:save",
+        memo: piece.name,
+      }).then(() => undefined),
+  );
 
   return snapshot(account, {
     awarded: result.points,

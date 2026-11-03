@@ -83,6 +83,13 @@ async function readBody(request: Request): Promise<Record<string, unknown>> {
   }
 }
 
+/** The query string as plain strings, so a read action can filter. */
+function readQuery(request: Request): Record<string, string> {
+  const query: Record<string, string> = {};
+  for (const [key, value] of new URL(request.url).searchParams) query[key] = value;
+  return query;
+}
+
 /**
  * The one handler behind every /api/v1 route: resolve the adapter, hand it the
  * body, answer with its envelope and status. No route ever throws a 500 of its
@@ -98,7 +105,7 @@ export async function respond(serviceName: string, action: string, request: Requ
     reply = fail(serviceName, action, "not_found", `${serviceName} has no action "${action}".`, 404);
   } else {
     try {
-      reply = await adapter.call(action, { body: await readBody(request) });
+      reply = await adapter.call(action, { body: await readBody(request), query: readQuery(request) });
     } catch (error) {
       reply = fail(
         serviceName,
