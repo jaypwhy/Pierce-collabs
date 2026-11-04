@@ -1,0 +1,878 @@
+Pierce Collabs — Gravity-fed density water treatment train
+Skip to the section drawing
+Pierce Collabs
+Treatment train · concept
+Section
+Flow logic
+Modules
+Selection
+Calculator
+Contact
+Contact
+Tijuana & San Diego River watersheds — concept design
+A treatment train that lets gravity do the work.
+Water enters at the top of the cascade and leaves at the bottom. Nothing is pumped and nothing is dosed: a run of low-head weir pools drops the velocity far enough that solids settle out by density, then hands the water to a mineral bed, then to a planted subsurface cell, then to a final polishing pool before discharge.
+Every element in the line is a module with a defined slot — a function, what we specify now, what else can go there, and what has to be true for the swap to hold. The design stays valid as the details change.
+Read the section
+The four modules
+Indicative view of the train as built. The cross-section below is the design document.
+Drive
+Head, not horsepower
+The cascade runs on the fall between weirs. No pumps, no blowers, no dosing line.
+Configuration
+Four stages, in series
+Solids by density, then mineral contact, then the root zone, then final settling.
+Everything is a slot
+Function · fill · alternates · constraints
+Each module is described so it can be replaced without redesigning the train.
+Planting
+Native species only
+Native California emergents and their native alternates. A constraint, not a debate.
+01 — The section
+The train, inlet to outlet
+One section through the whole cascade. Water enters through the headwall notch at the left, steps down through the two settling pools and the two treatment cells, and leaves over the outlet structure at the right. Every depth, media thickness and drop height on this drawing is our working value.
+Labelled cross-section of the gravity-fed treatment train, inlet to outlet
+A stepped section, descending left to right. Flow enters over the headwall notch into Pool 1, the forebay: a deep settling basin on a stone lining with a sediment allowance on a flat, reachable floor. It passes over Weir 1 into Pool 2, the mineral zone: a bed built up as a coarse gravel cap, then limestone, then clinoptilolite zeolite, then drainage gravel and an underdrain. A raised outlet weir passes it to Pool 3, the planted subsurface cell: washed gravel with a root zone, the water level held below the gravel surface and native bulrush, sedge and cattail reeds growing out of it. An outlet control weir passes it to Pool 4, the final polishing pool: an open basin with a limestone riprap floor and margin. The outlet structure discharges at the far end. A scale bar below the four module captions gives 0 to 2 metres.
+FLOW
+DISCHARGE
+CHANNEL CONTINUES
+UPSTREAM
+INLET HEADWALL
+1.20 m
+SETTLED GRIT + COARSE SILT
+CLEANED OUT MECHANICALLY
+ON A SET RHYTHM
+WEIR 1 — 150 mm FALL
+COARSE GRAVEL CAP
+LIMESTONE — pH BUFFER
+ZEOLITE — EXCHANGE
+DRAINAGE GRAVEL
+1.40 m
+WEIR 2 — 150 mm FALL
+ROOT ZONE — 400 mm
+WATER LEVEL −100 mm
+WASHED GRAVEL 20–40 mm
+1.15 m
+WEIR 3 — 150 mm FALL
+0.85 m
+OUTLET STRUCTURE — FREE OVERFLOW
+LIMESTONE RIPRAP FLOOR
+01
+FOREBAY
+Density separation
+1.20 m working depth
+0.12 m sediment allowance
+02
+MINERAL ZONE
+Contact and exchange
+0.55 m limestone
+0.55 m zeolite
+1.40 m total media
+03
+PLANTED CELL
+Subsurface flow, no exposed water
+0.40 m root zone
+1.05 m media depth
+04
+POLISHING POOL
+Final settling
+0.85 m working depth
+limestone riprap margin
+0
+1
+2 m
+SCALE
+Fig. 1 — Longitudinal section
+Drag the drawing sideways to trace the train.
+Scale bar as drawn. Not to be used for construction.
+Media build-up
+Pool 2 · Mineral zone
+01
+Coarse gravel cap
+150 mm — stops the bed short-circuiting
+02
+Limestone (CaCO₃)
+550 mm — alkalinity and pH buffer
+03
+Clinoptilolite zeolite
+550 mm — exchange sites, downstream of the buffer
+04
+Drainage gravel + underdrain
+150 mm
+Pool 3 · Planted subsurface cell
+01
+Gravel surface
+dry — 100 mm of freeboard over the water level
+02
+Root zone
+400 mm — the oxygenated band the roots work in
+03
+Washed gravel 20–40 mm
+1.05 m total media depth
+04
+Drainage gravel + underdrain
+150 mm
+Material palette
+Two families carry the whole train. Dark heavy stone does the settling — it is dense, durable against abrasion, and reads as a working surface. Warm limestone does the chemistry and the finish. The contrast between them is the design intent, not decoration: a reader can tell from across the page which part of the train is removing mass and which part is working on what stays dissolved.
+Heavy stone
+Sediment pools — Pool 1
+Zeolite & media
+Mineral zone — Pool 2
+Warm limestone
+Mineral zone and polishing pool
+Reed & root zone
+Planted cell — Pool 3
+Water
+Flow path through the train
+Indicative section. Depths, media thicknesses and drop heights are our working values — they are set by survey and design flow on a real site, not fixed here.
+02 — Flow logic
+What happens at each stage
+Read left to right on a wide screen, top to bottom on a phone. The bar runs continuously from inlet to outlet, and the colour changes where the mechanism changes.
+·
+Inlet
+Diversion
+Flow arrives below grade and is dropped in at the head of the train. The inlet apron dissipates the incoming energy so the first basin starts slow.
+01
+Pool 1 · Forebay
+Density separation
+Velocity drops below the transport threshold. Grit and coarse silt fall out of the moving water and stay on the floor.
+↓
+Weir 1
+Grade reset
+A low-head drop resets the hydraulic grade and re-aerates the surface as the flow moves to the mineral zone.
+02
+Pool 2 · Mineral
+Contact and exchange
+Flow enters across the bed and moves through limestone, then zeolite. pH is buffered, then ammonium and dissolved metals are taken onto exchange sites.
+↓
+Outlet weir
+Level control
+The raised outlet sets the water level inside the bed and delivers the flow, at a controlled rate, onto the gravel of the planted cell.
+03
+Pool 3 · Planted cell
+Rhizosphere
+Horizontal flow below the gravel surface, through the root zone. No exposed water, no standing liquid, no sludge surface to build.
+↓
+Weir 3
+Outlet control
+An outlet control weir sets the level in the planted cell and passes the treated flow to the last basin.
+04
+Pool 4 · Polishing
+Final settling
+The slowest water in the train. The remaining fine fraction settles onto a limestone floor and the surface returns to ambient.
+↓
+Outlet
+Discharge
+Free overflow to the receiving channel, below the last drop in the cascade.
+Sediment and stone
+Mineral media
+Plant and root zone
+Limestone
+Weir, grade reset and outlet
+03 — Approach
+Three decisions that set the whole train
+01
+Remove mass first, cheaply
+Solids are the largest load and the easiest to take out. Drop the velocity and the heavy fraction settles on its own, on a flat floor that equipment can reach. Everything downstream — the media, the root zone, the polishing pool — is bought with that first removal, because none of them should be spending capacity on grit.
+02
+Then work on what is dissolved
+What is left is in solution and needs contact, not settling. The mineral bed does the inorganic phase — buffering pH with limestone, then taking ammonium and metals onto exchange sites in the zeolite. It sits before the planted cell deliberately, so the biological stage receives water it can work on rather than water it has to tolerate.
+03
+Keep the biology under the gravel
+The planted cell runs below its own surface. The water travels through the root zone instead of over it, which keeps the treatment where the roots and the microbial community are, and removes the open liquid surface where a sludge mat would otherwise form. The only thing that leaves the cell is cut biomass — and that is a waste stream with a test and a disposal route, costed in, not sold as a product.
+04 — The modules
+Four slots, each one fillable more than one way
+This is the framework, not a fixed recipe. Nothing in the train is specified as the only possibility; each module states its function, what we are putting in the slot now, what else could go there, and what would have to be true for that swap to hold.
+01
+Forebay
+02
+Mineral zone
+03
+Planted subsurface cell
+04
+Final polishing pool
+01
+/
+Pool 1
+Forebay
+Velocity drops. Grit and coarse silt settle out by density.
+A deep, slow basin that cuts the velocity of the incoming flow far enough that heavy mineral solids stop travelling and drop. It is the only place in the train where the load is deliberately allowed to accumulate, and it is sized to be reached and emptied.
+Mechanism
+Density separation. Above a threshold shear velocity, grit and coarse silt stay in suspension; below it, the denser fraction settles. The forebay is sized to hold the flow long enough for the heavy fraction to reach the floor, and its floor is a flat, reachable slab so the material can be lifted out rather than left in place.
+Swap slot
+—
+01
+This slot could be filled three ways or more
+Function — what it does in the train
+First solids capture. Strips the heavy, fast-settling fraction — grit, sand, coarse silt, road-derived mineral solids — before it can blanket the media downstream.
+Current fill — what we specify now
+A lined, gravity-fed settling basin with a flat stone floor, a hardened inlet apron for energy dissipation, and a mechanical cleanout access at the downstream end.
+Alternates — what else can occupy this slot
+A two-cell forebay with the first cell drawdown-emptied while the second stays in service.
+A vortex / swirl separator insert for high-solids flows, keeping the same basin footprint.
+A coarse trash-and-grit screen rack plus a shallower settling cell, where the incoming load is mostly vegetation and litter rather than mineral solids.
+A widened stilling reach of channel upstream of the basin, where there is bank width to spare.
+Swap constraints — what has to be true
+Cleanout access must be reachable by the equipment that will actually service it — the basin is only mechanical if the machine can get to the floor.
+Drawdown capability is a swap constraint: any alternate that cannot be emptied dry cannot be cleaned on a rhythm.
+If the cleanout rhythm is longer than the fill rate, the basin goes anaerobic and the whole downstream train inherits the problem.
+A separator insert only works at a defined flow band — it has to be matched to the design flow, not added later.
+Working depth
+1.2 m
+Sediment allowance
+0.12 m
+Structure depth
+1.4 m
+02
+/
+Pool 2
+Mineral zone
+Water passes through limestone then zeolite. pH buffered, dissolved load taken up.
+A subsurface mineral bed. Flow enters across the top of the bed, moves down into the media and travels the length of it in contact with two mineral layers stacked in series. Nothing is dosed and nothing is pumped — the drive is the head between the weirs either side of it.
+Mechanism
+Contact and exchange. Limestone supplies alkalinity and holds the pore water in a pH band where dissolved metals stay as solids rather than returning to solution. Clinoptilolite is a framework aluminosilicate with an open, charged lattice: it takes ammonium and a share of dissolved metals out of the pore water onto exchange sites as the water moves past. The order matters — the limestone buffer is what keeps the exchange working.
+Swap slot
+—
+02
+This slot could be filled three ways or more
+Function — what it does in the train
+Dissolved-phase treatment and pH control, downstream of solids removal and upstream of the biological cell, so the planted cell receives water it can work on.
+Current fill — what we specify now
+A two-layer subsurface mineral bed: 0.55 m of calcium-carbonate limestone over 0.55 m of clinoptilolite zeolite, on a drainage gravel base with an underdrain, capped with coarse gravel and set between two weirs.
+Alternates — what else can occupy this slot
+Granular activated carbon as a third layer for trace organics, where the incoming flow carries them.
+Iron-oxide-coated sand in place of clinoptilolite where the target is arsenate rather than ammonium.
+Biochar from clean vegetative feedstock as a partial substitute for zeolite, blended into the upper layer.
+A crushed-oyster-shell or recycled-concrete layer as the carbonate source where limestone supply is the constraint.
+A parallel second bed on a swap-out cycle, so one bed can be taken offline while the other carries the flow.
+Swap constraints — what has to be true
+Media has a finite exchange capacity — the swap constraint is a replacement schedule tied to monitoring, not a lifetime.
+Media grade and layer thickness set the contact time. Substituting media without re-deriving the layer depth and grade breaks the contact.
+The carbonate layer has to stay upstream of the exchange layer, or the pH buffer arrives too late to keep metals on the media.
+Any alternate has to be a material that will not itself leach — a swap is a material specification, not a like-for-like volume.
+Layering and a gravel cap are what stop the bed short-circuiting. A single graded-fill substitute needs a redesign of the distribution, not a substitution.
+Limestone layer
+0.55 m
+Zeolite layer
+0.55 m
+Total media depth
+1.40 m
+Drainage base
+0.15 m
+03
+/
+Pool 3
+Planted subsurface cell
+Flow moves below the gravel surface, through the root zone. No exposed water.
+A long gravel bed planted with native emergent species. The water level sits below the gravel surface and the flow travels horizontally through the root zone, so there is no open water surface, no standing liquid, and no place for a sludge mat to form.
+Mechanism
+Rhizosphere treatment. Roots leak oxygen into an otherwise reduced gravel matrix, which supports the microbial communities that nitrify and denitrify around them. The gravel itself filters remaining fines and holds a large colonised surface area per unit of volume. Nutrients and metals taken up by the plants are held in the above-ground biomass, which is then cut and removed — the removal is the harvest, not the growth.
+Swap slot
+—
+03
+This slot could be filled three ways or more
+Function — what it does in the train
+Biological nutrient and metal uptake, plus fine-solids filtration, at the end of the train where the remaining load is dissolved or near-dissolved.
+Current fill — what we specify now
+A washed-gravel horizontal subsurface-flow cell with a 0.40 m root zone, planted with native hardstem bulrush, California bulrush, native sedge and broadleaf cattail.
+Alternates — what else can occupy this slot
+Hardstem bulrush (Schoenoplectus acutus) — a species of native sedge, deep-rooted, tolerant of the full flow band. (Native.)
+California bulrush (Schoenoplectus californicus) — taller, denser stem, more aggressive spread. (Native.)
+Common spikerush (Eleocharis macrostachya) — lower stature, fills the shallow margins and the inlet apron. (Native.)
+Rushes (Juncus spp., native, e.g. Juncus effusus) — deep, fine root mass, works in the coarser gravel at the inlet end. (Native.)
+Saltgrass (Distichlis spicata) — native and salt-tolerant, for cells taking brackish or estuary-influenced flow. (Native.)
+A mixed-species planting in bands down the cell rather than a single species, which spreads the failure modes across the bed.
+Swap constraints — what has to be true
+Native California species only, or their native alternates. This is a constraint field, not a debate.
+Planting is by rootstock on set centres, not seed — the bed has to vegetate on the hydraulic schedule, not on a germination season.
+The water level must stay below the media surface. A species swap that needs ponded surface water is a different cell type, not a swap.
+Species choice follows salinity: saltgrass holds where estuary-influenced flow reaches the cell; the larger bulrushes do not.
+Above-ground biomass is contaminated waste. Every species here commits the operator to a harvest cycle, sampling and a disposal route — a real operating cost, not a free resource.
+Deep-rooted species are the constraint on gravel grade. Too fine a media starves the root zone of oxygen; too coarse will not hold the root mass.
+Root zone
+0.40 m
+Media depth
+1.05 m
+Water level below surface
+0.10 m
+Media grade
+20–40 mm washed gravel
+04
+/
+Pool 4
+Final polishing pool
+The last fines settle before discharge.
+A shallow, slow, open basin at the bottom of the cascade, edged and floored with limestone riprap. It is the settling buffer between the engineered train and the receiving watercourse, and its depth is set so accumulated material can still be reached.
+Mechanism
+Final settling and re-aeration. At the bottom of the cascade the flow is at its slowest and the remaining suspended fraction is the fine end of the silt. The run to the outlet gives it residence time for that fraction to reach the floor, and the open surface returns the water to ambient conditions before it re-enters the watercourse. The limestone margin keeps the wetted edge buffered rather than bare.
+Swap slot
+—
+04
+This slot could be filled three ways or more
+Function — what it does in the train
+Final solids capture and a stable transition to the receiving channel, plus attenuation of the flow arriving from the planted cell.
+Current fill — what we specify now
+A shallow open basin with a limestone riprap floor and margin, a vegetated shoreline, and an outlet structure set at the far end.
+Alternates — what else can occupy this slot
+A deeper two-stage basin with a settlable first cell and a shallow vegetated second cell.
+A riprap-lined stilling reach of channel in place of a basin, where the ground does not allow another cut.
+A gravel-and-limestone filter berm across the outlet, where the polishing duty is filtration rather than settling.
+A native marginal planting strip along the wetted edge in place of bare riprap, where shear at the outlet permits it.
+Swap constraints — what has to be true
+Outlet geometry is what sets the upstream water levels. Changing the outlet structure re-levels the whole train, so it is the least swappable element in the line.
+A basin this shallow only holds if the depth stays within reach of the cleaning equipment — the same rule as the forebay, at the other end.
+Marginal planting is only an alternate where the shoreline is not the scour zone.
+Any alternate has to keep the free overflow: a submerged outlet takes level control away from the weirs.
+Working depth
+0.85 m
+Margin
+Limestone riprap
+05 — Selection
+What fills each slot, and where it stops working
+Media and planting, side by side: what the material actually takes out of the water, the condition under which it fails, and the alternates that can hold the same slot. Native-status is stated on the planting rows because it is a constraint on the slot, not a preference.
+Slot
+What it removes
+Where it fails
+Native alternates
+Media
+Slot
+Calcium-carbonate limestone
+Native California
+What it removes
+Raises alkalinity and holds pore-water pH in the band where dissolved metals stay as solids rather than returning to solution.
+Where it fails
+Consumes itself as it buffers. Where the incoming water is already hard or alkaline it does little that the water is not already doing.
+Native alternates
+Crushed oyster shell, recycled concrete aggregate
+Slot
+Clinoptilolite zeolite
+What it removes
+Ammonium and a share of dissolved metals, taken onto charged exchange sites in the mineral lattice as the pore water moves past.
+Where it fails
+Finite exchange capacity. Loses selectivity in high-hardness water, where calcium competes for the same sites.
+Native alternates
+Iron-oxide-coated sand (arsenate), biochar blend
+Slot
+Washed gravel, 20–40 mm
+What it removes
+Remaining fines by filtration, and provides the colonised surface area the root zone works against.
+Where it fails
+Clogs if solids reach it. It is not a treatment medium, only a substrate — it fails by carrying load it was never meant to see.
+Native alternates
+Coarser inlet-end band grading down the cell
+Planting
+Slot
+Hardstem / California bulrush
+Native California
+What it removes
+Nutrients and metals into harvestable above-ground biomass; deep roots carry oxygen into the gravel matrix.
+Where it fails
+Needs the water level kept below the media surface. A cell that ponds at the surface is a different cell type, not a planting swap.
+Native alternates
+Common spikerush (E. macrostachya), native rushes (Juncus spp.)
+Slot
+Broadleaf cattail (Typha latifolia)
+Native California
+What it removes
+High-volume nutrient uptake; dense stem stand that shades the bed and stabilises the media surface.
+Where it fails
+Spreads aggressively and will move into every part of the cell if not cut back on the harvest cycle.
+Native alternates
+Native sedges (Carex spp.), spikerush
+Slot
+Saltgrass (Distichlis spicata)
+Native California
+What it removes
+Nutrient uptake and shoreline stabilisation where the flow carries estuary-derived salinity.
+Where it fails
+Lower stature and slower to establish. Does not give the deep root mass the larger bulrushes do.
+Native alternates
+Native rushes in the brackish band
+Every removal mechanism, media capacity and native-status claim on this page gets a citation before it goes in front of a partner. The table is the frame; the references attach to the individual rows.
+06 — Calculator
+Run the train on your water, in your place
+The same cascade as a working model. Choose the load, choose the environment, then build the train stage by stage and watch the water sample respond — with a constituent-by-constituent readout of which stage acts, by what mechanism, and what is left. The environment is a constraint, not a theme: it decides the plant palette, which media can be supplied, what the place adds to the water, and how much the biology can deliver.
+How to read this
+The payload here is mechanism and staging: which stage acts on what, and why. Constituent loads are
+relative indices on a 0–100 scale
+, a design characterisation of a load — not measured concentrations — and every removal figure is a
+design estimate
+. Nothing this tool produces is potable water or a fully purified output, and none of it stands in for a monitored record at a real site.
+Step
+1
+Your water
+Start from a known load profile, or set the constituents yourself. Moving any slider switches the source to your own figures.
+Water sample
+Tijuana River — urban & transboundary load
+Urban / transboundary profile
+San Diego River — urban runoff
+Urban runoff profile
+Set constituents directly
+Your own figures
+A heavily loaded urban flow: a large solids and trash fraction, untreated municipal sewage in the mix, and the pathogen and sediment load that comes with both. The profile is set from the character of the load, not from a monitored record.
+Suspended silt & grit
+Mineral solids held in suspension by the velocity of the flow: grit, sand, road-derived fines and coarse silt.
+72
+/ 100
+Floatables & trash
+Material that floats or is carried on the surface: vegetation and leaf litter, plastic, shreds, films and coarse organic matter.
+78
+/ 100
+Dissolved metals
+The dissolved and particle-bound metal fraction — the load that has to be taken onto a surface or precipitated, not settled out of suspension.
+46
+/ 100
+Nutrients (N & P)
+Nitrogen as ammonium and nitrate, and phosphorus, largely attached to the fine solids and the organic fraction.
+76
+/ 100
+Hydrocarbons
+Fuel and oil residues, and the film and sheen they form on the surface of slow water.
+52
+/ 100
+Pathogens
+Bacteria, viruses and protozoa, free in the water and attached to suspended particles.
+88
+/ 100
+Salinity / TDS
+Dissolved salts and total dissolved solids, from urban sources, agricultural return and estuary-derived flow.
+46
+/ 100
+pH
+The water's own pH, before anything in the train touches it.
+7.3
+Step
+2
+Your place
+Desert, forest or tundra. This is a constraint layer, not a skin: it decides which plants you are offered, which media can actually be supplied, what the place adds to the water, and how much of its treatment the biology can deliver.
+Environment
+Desert
+Flashy seasonal flow, high evaporation, hot summers
+Forest
+Organic load and leaf litter, lower pH, shade and cooler water
+Tundra
+Freeze-thaw, a dormant biological season, a short growing season
+What this place means for the design
+Flashy, seasonal flow. Most of the annual volume arrives in a few short events and the train then sits dry. The same footprint gets far less residence time than it would on a steady baseflow, so settling has less time to work.
+High evaporation. Open pools lose water to the air and concentrate whatever is dissolved in it. Where the flow is exposed, dissolved load and salinity climb rather than fall — evaporative concentration works against the train, and it is why salinity is a design constraint here and not a footnote.
+Hot summers. Shallow water swings hard in temperature, dissolved oxygen falls as it warms, and the biological stage is least reliable exactly when it is under the most heat and the least shade.
+Local media. Quarried or produced-here media is carbonate rock, sand, gravel and recycled concrete; exchange and carbon media are hauled-in consumables with a replacement schedule attached.
+Plant palette offered here
+Desert-wetland natives: species that will take a dry-down and a saline spike.
+Olney's threesquare bulrush
+Schoenoplectus americanus
+Native — California deserts and the Southwest
+Saltgrass
+Distichlis spicata
+Native — California, including desert wetlands
+Baltic rush
+Juncus balticus
+Native — western North America
+Southern cattail
+Typha domingensis
+Native — California and the Southwest
+Mixed band planting
+Bands of threesquare bulrush, saltgrass, Baltic rush and southern cattail
+Native — as listed above
+Media this place can supply
+Limestone over clinoptilolite zeolite
+Available
+Carbonate rock is quarried regionally; the exchange mineral is hauled in but is a normal consumable here.
+Crushed oyster shell / recycled concrete
+Available
+Coastal shell and demolition concrete are both reachable, and recycled concrete is a genuine local carbonate source.
+Iron-oxide-coated sand
+With a catch
+Manufactured and hauled in. Works, but the haul and the replacement schedule are the whole cost of the layer.
+Granular activated carbon
+With a catch
+Imported consumable with a finite, invisible capacity. Justified only if the flow really carries dissolved organics.
+Biochar blend
+Not realistic
+No clean woody feedstock at scale in this environment. Biochar here would be a hauled-in consumable, not a local product.
+What this place adds to the water
++
+6
+Suspended silt & grit
+—
+This place adds 6 index points to the load before the train sees it.
++
+10
+Salinity / TDS
+—
+This place adds 10 index points to the load before the train sees it.
+Step
+3
+Build your train
+Add and remove stages, choose the bed medium and the planted species. The cascade fixes the order — solids first, then the dissolved phase, then the root zone, then final settling — so the train is read in that order however you build it.
+Add a stage
++
+Add
+Aeration step
+01
+/
+Solids by density
+Settling forebay
+Remove
+Settling forebay
+from the train
+−
+Density separation. Above a threshold shear velocity grit and coarse silt stay in suspension; below it the denser fraction settles. A deep slow basin with a flat, reachable floor does the work, and it is the only stage that is meant to accumulate load.
+02
+/
+Dissolved load & pH
+Mineral bed
+Remove
+Mineral bed
+from the train
+−
+Contact and exchange. Water moves down into the media and travels the length of the bed in contact with it. Whatever fills the slot decides which dissolved fraction this stage can actually take.
+Bed medium — the swap slot for this stage
+Limestone over clinoptilolite zeolite
+Available here
+0.55 m calcium-carbonate limestone over 0.55 m clinoptilolite, gravel base and cap
+Crushed oyster shell / recycled concrete
+Available here
+A single carbonate layer, 0.7 m, on a gravel base and cap — no exchange layer
+Iron-oxide-coated sand
+Available, with a catch
+0.6 m iron-oxide-coated sand over a graded gravel base, carbonate layer upstream
+Manufactured and hauled in. Works, but the haul and the replacement schedule are the whole cost of the layer.
+Granular activated carbon
+Available, with a catch
+0.6 m GAC on a gravel base and cap, no carbonate layer
+Imported consumable with a finite, invisible capacity. Justified only if the flow really carries dissolved organics.
+Biochar blend
+Not realistic here
+No clean woody feedstock at scale in this environment. Biochar here would be a hauled-in consumable, not a local product.
+04
+/
+Root zone & biology
+Planted subsurface cell
+Remove
+Planted subsurface cell
+from the train
+−
+Rhizosphere treatment. Flow travels below the gravel surface through the root zone: roots leak oxygen into an otherwise reduced matrix, which supports the microbial communities that nitrify and denitrify around them. The gravel filters remaining fines, and nutrients and metals taken up by the plants are held in above-ground biomass — the removal is the harvest, not the growth.
+Planted species — native to this place
+Olney's threesquare bulrush
+Schoenoplectus americanus
+Saltgrass
+Distichlis spicata
+Baltic rush
+Juncus balticus
+Southern cattail
+Typha domingensis
+Mixed band planting
+Bands of threesquare bulrush, saltgrass, Baltic rush and southern cattail
+Native — California deserts and the Southwest
+Deep-rooted and tolerant of both dry-down and a saline spike; the standard emergent of desert ciénegas.
+Swap constraint
+Slower to establish on a gravel bed than the larger bulrushes.
+05
+/
+Final settling
+Polishing pool
+Remove
+Polishing pool
+from the train
+−
+The slowest water in the train. Remaining fines get residence time to reach the floor, marginal planting and the open surface do a little more work on nutrients and pathogens, and the water returns toward ambient conditions before discharge.
+The water, stage by stage
+The sample reacts as stages are added and removed: floating debris, suspended solids, dissolved colour and how much of the clarity plate you can see through the water.
+Sample — as it leaves the train
+At the inlet
+Leaving
+Sample as it leaves the train: clear water, light suspended solids, present floating debris, dissolved colour faint, surface film faint sheen, salt load moderate. All levels are design estimates.
+CLARITY PLATE
+SURFACE
+FILM
+SALT LOAD
+pH
+7.7
+71
+% clarity
+design estimate
+4 stages in the train.
+Sample is drawn from design estimates, not a measurement.
+Clarity
+Clear
+Floating debris
+Present
+Suspended solids
+Light
+Dissolved colour
+Faint
+Surface film
+Faint sheen
+Salt load
+Moderate
+Clarity, as drawn
+71
+%
+est.
+Colour is indicative only. Read the qualitative levels, not the tint.
+Influent colour is shown as a swatch for comparison. Inlet load reference:
+78
+silt,
+78
+floatables.
+Train updated. 4 stages. Clarity 71 percent, suspended solids light.
+Constraints firing on this build
+In desert conditions the planted cell is dormant or near-dormant for much of the year: its removal is scaled to 65% of a temperate-season bed.
+Per-constituent readout
+Every figure a design estimate
+For each constituent: the stages that act on it, the mechanism they act by, and what is left behind them. Removal percentages are modelled design estimates, not measurements.
+Suspended silt & grit
+✓
+Largely addressed
+Influent
+78
+→ leaving
+18
+index 0–100, est.
+(includes
++
+6
+from this place)
+77
+% removed est.
+01 Settling forebay
+/
+settling
+47
+% of what reaches it
+02 Mineral bed
+/
+filtration
+12
+% of what reaches it
+04 Planted subsurface cell
+/
+filtration
+30
+% of what reaches it
+05 Polishing pool
+/
+settling
+30
+% of what reaches it
+What stays behind
+The residual is the fine end of the silt — the fraction still in suspension at the velocity this train holds. It is the fraction that can be carried straight through to the receiving channel.
+Floatables & trash
+✓
+Largely addressed
+Influent
+78
+→ leaving
+48
+index 0–100, est.
+38
+% removed est.
+01 Settling forebay
+/
+retention
+26
+% of what reaches it
+05 Polishing pool
+/
+retention
+17
+% of what reaches it
+What stays behind
+Coarse material is caught at the inlet. What passes is film, shreds and fine litter, and a forebay that is not cleaned on its rhythm releases the retained material back into the flow.
+Dissolved metals
+✓
+Largely addressed
+Influent
+46
+→ leaving
+20
+index 0–100, est.
+57
+% removed est.
+01 Settling forebay
+/
+settling
+10
+% of what reaches it
+02 Mineral bed
+/
+ion exchange
+45
+% of what reaches it
+04 Planted subsurface cell
+/
+plant uptake
+17
+% of what reaches it
+05 Polishing pool
+/
+settling
+8
+% of what reaches it
+What stays behind
+On a mineral bed the metals are held, not destroyed: they are still on the media, and the removal only holds while the bed is inside its replacement schedule. Residual dissolved metal remains in the water leaving the train. Open evaporation in this environment also puts dissolved load back into the water.
+Nutrients (N & P)
+✓
+Largely addressed
+Influent
+76
+→ leaving
+31
+index 0–100, est.
+59
+% removed est.
+01 Settling forebay
+/
+settling
+10
+% of what reaches it
+02 Mineral bed
+/
+ion exchange
+35
+% of what reaches it
+04 Planted subsurface cell
+/
+plant uptake
+31
+% of what reaches it
+05 Polishing pool
+/
+plant uptake
+10
+% of what reaches it
+What stays behind
+Plant uptake is only a removal when the growth is cut and taken away. The nutrient held in above-ground biomass stays in the cell until harvest, and the cut material is a contaminated waste stream with a test and a disposal route. Open evaporation in this environment also puts dissolved load back into the water.
+Hydrocarbons
+✓
+Largely addressed
+Influent
+52
+→ leaving
+33
+index 0–100, est.
+37
+% removed est.
+01 Settling forebay
+/
+retention
+10
+% of what reaches it
+02 Mineral bed
+/
+adsorption
+10
+% of what reaches it
+04 Planted subsurface cell
+/
+microbial treatment
+23
+% of what reaches it
+05 Polishing pool
+/
+microbial treatment
+10
+% of what reaches it
+What stays behind
+Adsorption and volatilisation move hydrocarbons off the water and into the medium or the air. The spent medium becomes a waste stream and the volatilised fraction simply changes place. Open evaporation in this environment also puts dissolved load back into the water.
+Pathogens
+✓
+Largely addressed
+Influent
+88
+→ leaving
+35
+index 0–100, est.
+60
+% removed est.
+01 Settling forebay
+/
+settling
+15
+% of what reaches it
+02 Mineral bed
+/
+filtration
+10
+% of what reaches it
+04 Planted subsurface cell
+/
+microbial treatment
+30
+% of what reaches it
+05 Polishing pool
+/
+retention
+25
+% of what reaches it
+What stays behind
+This train has no disinfection stage. Retention, predation and die-off in slow open water take a share of the load; the residual is a public-health question that belongs to a disinfection process, not to this cascade. Nothing this tool shows makes the water safe to contact or consume.
+Salinity / TDS
+!
+Not addressed by this train
+Influent
+56
+→ leaving
+61
+index 0–100, est.
+(includes
++
+10
+from this place)
+-9
+% removed est.
+04 Planted subsurface cell
+/
+plant uptake
+3
+% of what reaches it
+What stays behind
+No stage in this train removes dissolved salt. Settling, exchange and plant uptake all leave it behind, and in a desert the open pools concentrate it as they evaporate. Only dilution or a dedicated desalination stage changes this number. Open evaporation in this environment also puts dissolved load back into the water.
+pH
+✓
+Largely addressed
+Influent
+7.3
+→ leaving
+7.7
+est.
+02 Mineral bed
+/
+pH-driven precipitation
+05 Polishing pool
+/
+pH-driven precipitation
+What stays behind
+The train raises pH toward a buffered band and holds it there; it does not acidify. Carbonate media consume themselves doing it, and a water that arrives far outside the band is a problem no stage here solves.
+Design estimates throughout. The train is a solids-and-dissolved-load cascade: whatever this tool shows, the water leaving it is not potable, not disinfected, and not a substitute for monitoring at a real outfall.
+07 — Built in
+Two constraints that are part of the design
+Planting is native, and that is fixed
+Every planting slot in this train is filled with a native California species or one of its native alternates — bulrush, sedge, cattail, spikerush, rush, and saltgrass where the flow carries estuary-derived salinity. Species that do the same job but do not belong in these watersheds do not appear on this page as options, because they are not options. It is written into the module as a swap constraint so it holds when the details change.
+Harvested biomass is waste, and it is costed
+The planted cell removes nutrients and metals by growing, which means the removal only actually happens when the growth is cut and taken away. That cut material has been through a treatment cell working on a river that carries urban and agricultural load: it is a contaminated waste stream that needs sampling and a disposal route. Every planting module in this train commits the operator to a harvest cycle, a test, and a place for the material to go. That is an operating cost of the design, not a by-product of it.
+08 — Next
+From concept to a site section
+This page is the design at the point where it can be argued with. The next version is a section at a real location, and that needs a real location.
+Open on our side
+Whether this develops as a replicable open design that any watershed group can build from, or as one detailed design on a single named outfall with its own land ownership, permits and flow rate. Both are live. The first produces something publishable; the second produces something buildable.
+What changes it
+A named outfall or reach with a measured flow, the solids load, and the land tenure. That is enough to re-dimension every pool and media layer on this page and turn the indicative section into a construction section. If you manage one of these rivers, that is the conversation worth having.
+09 — Contact
+Agency and watershed-partner enquiries
+If you manage a reach on the Tijuana or San Diego River system, hold flow or water-quality data for one, or work on native plant stock from regional provenance, we want to hear it. Send the site and the constraint and we will tell you what the train looks like there.
+Agency and watershed partners
+River managers, flood-control districts and estuary reserve staff working on the Tijuana or San Diego River systems.
+Site and flow data
+You have a named outfall or reach and you can give us flow, solids loading or an existing monitoring record.
+Research and media supply
+Media characterisation, native plant stock from regional provenance, or a treatment train you have measured.
+Enquiry route
+The enquiry form on this site is being stood up. In the meantime, put “treatment train” and the watercourse in the subject line so it lands in the right place.
+Start an enquiry
+→
+Opens your mail client. No mailbox is wired to this page yet.
+Pierce Collabs — gravity-fed density treatment train · concept
+Tijuana River · San Diego River watersheds

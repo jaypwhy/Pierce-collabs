@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Btn Press Pay Btn - Free Money for All!</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      font-size: 3rem;
+      color: #ff6b6b;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    }
+    #money-display {
+      font-size: 2.5rem;
+      margin: 20px 0;
+      font-weight: bold;
+      color: #ffd700;
+    }
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    #click-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    #pay-btn {
+      background-color: #ff9800;
+      color: white;
+    }
+    #unlock-btn {
+      background-color: #673AB7;
+      color: white;
+    }
+    #upgrade-btn {
+      background-color: #2196F3;
+      color: white;
+    }
+    #reward {
+      margin: 20px 0;
+      font-size: 1.5rem;
+      min-height: 50px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      display: none;
+    }
+    #reward img {
+      max-width: 100%;
+      height: auto;
+    }
+    #stats {
+      margin: 20px 0;
+      font-size: 1.1rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Btn Press Pay Btn - Free Money for All!</h1>
+  <div id="money-display">$0</div>
+  <div id="stats">Clicks: 0 | Unlocks: 0 | Upgrades: 0</div>
+  <div class="button-container">
+    <button id="click-btn">Click Me (Free)</button>
+    <button id="pay-btn">Pay $10 (But You Get $50)</button>
+    <button id="unlock-btn" disabled>Unlock New Button ($50)</button>
+    <button id="upgrade-btn" disabled>Upgrade (Double Clicks! $100)</button>
+  </div>
+  <div id="reward"></div>
+  <script>
+    // Game state
+    let money = 0;
+    let clicks = 0;
+    let unlocks = 0;
+    let upgrades = 0;
+    let clickMultiplier = 1;
+    let isPaying = false;
+    // DOM elements
+    const moneyDisplay = document.getElementById('money-display');
+    const clickBtn = document.getElementById('click-btn');
+    const payBtn = document.getElementById('pay-btn');
+    const unlockBtn = document.getElementById('unlock-btn');
+    const upgradeBtn = document.getElementById('upgrade-btn');
+    const rewardDiv = document.getElementById('reward');
+    const statsDiv = document.getElementById('stats');
+    // Update UI
+    function updateUI() {
+      moneyDisplay.textContent = `$${money}`;
+      statsDiv.textContent = `Clicks: ${clicks} | Unlocks: ${unlocks} | Upgrades: ${upgrades}`;
+    }
+    // Click button (free)
+    clickBtn.addEventListener('click', () => {
+      money += clickMultiplier;
+      clicks++;
+      showReward`+$${clickMultiplier} (Click!)`);
+      updateUI();
+    });
+    // Pay button (costs money but gives more)
+    payBtn.addEventListener('click', () => {
+      if (money >= 10) {
+        money -= 10;
+        money += 50;
+        clicks++;
+        showReward`You paid $10 and got $50! (Net +$40)`);
+        updateUI();
+      } else {
+        showReward("Not enough money! (Go click more buttons.)");
+      }
+    });
+    // Unlock new button
+    unlockBtn.addEventListener('click', () => {
+      if (money >= 50) {
+        money -= 50;
+        unlocks++;
+        unlockBtn.disabled = true;
+        const newBtn = document.createElement('button');
+        newBtn.textContent = "Secret Button (Click 100x for $1000)";
+        [newBtn.style](http://newBtn.style).backgroundColor = "#9C27B0";
+        [newBtn.style](http://newBtn.style).fontSize = "1rem";
+        newBtn.addEventListener('click', () => {
+          if (clicks >= 100) {
+            money += 1000;
+            clicks = 0;
+            showReward`+$1000! (But it's just a JPG of a banana.)`);
+            updateUI();
+          } else {
+            showReward`Click 100 times first! (You've clicked ${clicks}/100)`);
+          }
+        });
+        document.querySelector('.button-container').appendChild(newBtn);
+        updateUI();
+      } else {
+        showReward("Not enough money! (Click more buttons.)");
+      }
+    });
+    // Upgrade (double clicks)
+    upgradeBtn.addEventListener('click', () => {
+      if (money >= 100) {
+        money -= 100;
+        upgrades++;
+        clickMultiplier *= 2;
+        upgradeBtn.disabled = true;
+        showReward`Upgrade activated! Clicks now give +$${clickMultiplier}!`);
+        updateUI();
+      } else {
+        showReward("Not enough money! (Click more buttons.)");
+      }
+    });
+    // Show reward (with humor)
+    function showReward(message) {
+      rewardDiv.textContent = message;
+      [rewardDiv.style](http://rewardDiv.style).display = 'block';
+      // Random funny reward (e.g., banana, meme, etc.)
+      const funnyRewards = [
+        "🍌 (A banana. It's just a banana.)",
+        "🎉 (Congrats! You got a virtual high-five.)",
+        "💰 (You found a $10 bill in a sock. Again.)",
+        "🤡 (You got a clown nose. Wear it proudly.)"
+      ];
+      rewardDiv.innerHTML = `<strong>${message}</strong><br>${funnyRewards[Math.floor(Math.random() * funnyRewards.length)]}`;
+      setTimeout(() => {
+        [rewardDiv.style](http://rewardDiv.style).display = 'none';
+      }, 3000);
+    }
+    // Initialize
+    updateUI();
+  </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roasted Bean Particles</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        button {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #A0522D;
+        }
+        .status {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .status-value {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- UI Panel -->
+        <div id="ui-panel">
+            <h2>Coffee Brewing Simulator</h2>
+            <div class="control-group">
+                <label for="grindFineness">Grind Fineness</label>
+                <input type="range" id="grindFineness" min="0.5" max="2.0" step="0.1" value="1.0">
+                <div class="status">
+                    Fineness: <span class="status-value" id="grindDisplay">Medium</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="roastIntensity">Roast Intensity</label>
+                <input type="range" id="roastIntensity" min="0" max="100" value="30">
+                <div class="status">
+                    Roast Level: <span class="status-value" id="roastDisplay">Low</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="dispersionForce">Dispersion Force</label>
+                <input type="range" id="dispersionForce" min="1" max="10" step="0.5" value="3">
+                <div class="status">
+                    Dispersion: <span class="status-value" id="dispersionDisplay">Normal</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <button id="startGrinding">Start Grinding</button>
+                <button id="startRoasting">Start Roasting</button>
+                <button id="dispenseBeans">Dispense Beans</button>
+                <button id="reset">Reset</button>
+            </div>
+        </div>
+    </div>
+    <script src="[https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>](https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>)
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+        // Ground plane
+        const groundGeometry = new THREE.PlaneGeometry(20, 20);
+        const groundMaterial = new THREE.MeshStandardMaterial({
+            color: 0x3a2f23,
+            roughness: 0.8,
+            metalness: 0.1
+        });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(1, 1, 1);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        scene.add(directionalLight);
+        // Camera position
+        camera.position.set(0, 10, 15);
+        camera.lookAt(0, 0, 0);
+        // UI Elements
+        const ui = {
+            grindFineness: document.getElementById('grindFineness'),
+            roastIntensity: document.getElementById('roastIntensity'),
+            dispersionForce: document.getElementById('dispersionForce'),
+            startGrinding: document.getElementById('startGrinding'),
+            startRoasting: document.getElementById('startRoasting'),
+            dispenseBeans: document.getElementById('dispenseBeans'),
+            reset: document.getElementById('reset'),
+            grindDisplay: document.getElementById('grindDisplay'),
+            roastDisplay: document.getElementById('roastDisplay'),
+            dispersionDisplay: document.getElementById('dispersionDisplay')
+        };
+        // Simulation variables
+        let beans = [];
+        let grindFineness = 1.0;
+        let roastIntensity = 30;
+        let dispersionForce = 3;
+        let isGrinding = false;
+        let isRoasting = false;
+        let roastProgress = 0;
+        let roastTimer = null;
+        let dispersionTimer = null;
+        let ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        // Initialize beans
+        function initBeans(count) {
+            beans = [];
+            const beanGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+            const beanMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8B4513, // Light brown
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            for (let i = 0; i < count; i++) {
+                const bean = new THREE.Mesh(beanGeometry, beanMaterial);
+                bean.position.set(
+                    (Math.random() - 0.5) * 8,
+                    5 + Math.random() * 3,
+                    (Math.random() - 0.5) * 8
+                );
+                bean.userData = {
+                    velocity: new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.5,
+                        0,
+                        (Math.random() - 0.5) * 0.5
+                    ),
+                    roastProgress: 0,
+                    isGround: false
+                };
+                scene.add(bean);
+                beans.push(bean);
+            }
+        }
+        // Grinding function
+        function grindBeans() {
+            if (isGrinding) return;
+            isGrinding = true;
+            beans.forEach(bean => {
+                // Split bean into smaller particles based on fineness
+                const particleCount = Math.floor(10 / grindFineness);
+                const originalScale = bean.scale.x;
+                for (let i = 0; i < particleCount; i++) {
+                    const particleGeometry = new THREE.SphereGeometry(
+                        originalScale _0.1_ grindFineness,
+                        8,
+                        8
+                    );
+                    const particleMaterial = new THREE.MeshStandardMaterial({
+                        color: 0x8B4513,
+                        roughness: 0.7,
+                        metalness: 0.1
+                    });
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    particle.position.copy(bean.position);
+                    particle.userData = {
+                        velocity: new THREE.Vector3(
+                            (Math.random() - 0.5) * 0.3,
+                            Math.random() * 0.5,
+                            (Math.random() - 0.5) * 0.3
+                        ),
+                        roastProgress: 0,
+                        isGround: false
+                    };
+                    // Add some randomness to particle positions
+                    particle.position.x += (Math.random() - 0.5) * 0.5;
+                    particle.position.y += (Math.random() -

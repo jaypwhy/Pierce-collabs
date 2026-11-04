@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Vibrate</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #0a0a1a;
+            color: white;
+            user-select: none;
+        }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 300px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        select {
+            width: 100%;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #555;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.5);
+            border-radius: 5px;
+            font-size: 14px;
+            border-left: 3px solid #4a90e2;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <h2>Water Vibrate</h2>
+        <div class="control-group">
+            <label for="particleCount">Particle Count</label>
+            <input type="range" id="particleCount" min="10" max="1000" value="200">
+            <span id="countDisplay">200</span>
+        </div>
+        <div class="control-group">
+            <label for="particleSize">Particle Size</label>
+            <input type="range" id="particleSize" min="0.1" max="1.0" step="0.01" value="0.3">
+            <span id="sizeDisplay">0.3</span>
+        </div>
+        <div class="control-group">
+            <label for="density">Water Density</label>
+            <input type="range" id="density" min="0.1" max="2.0" step="0.1" value="1.0">
+            <span id="densityDisplay">1.0</span>
+        </div>
+        <div class="control-group">
+            <label for="vibrationStrength">Vibration Strength</label>
+            <input type="range" id="vibrationStrength" min="0" max="10" value="3">
+            <span id="strengthDisplay">3</span>
+        </div>
+        <div class="control-group">
+            <label for="vibrationFrequency">Vibration Frequency</label>
+            <input type="range" id="vibrationFrequency" min="1" max="20" value="5">
+            <span id="frequencyDisplay">5</span>
+        </div>
+        <div class="control-group">
+            <label for="waveType">Wave Type</label>
+            <select id="waveType">
+                <option value="sine">Sine Wave</option>
+                <option value="square">Square Wave</option>
+                <option value="triangle">Triangle Wave</option>
+                <option value="sawtooth">Sawtooth Wave</option>
+                <option value="random">Random Vibration</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <button id="addVibration">Add Vibration Source</button>
+            <button id="clearVibrations">Clear All Vibrations</button>
+        </div>
+        <div class="status">
+            <p>Drag particles to move them. Click to add vibration sources.</p>
+        </div>
+    </div>
+    <div id="info">Water Vibrate Simulation</div>
+    <script src="[https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>](https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>)
+    <script src="[https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>](https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>)
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        // Controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 5;
+        controls.maxDistance = 20;
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+        // Water particles
+        const particles = [];
+        const particleGeometry = new THREE.BufferGeometry();
+        const particleMaterial = new THREE.PointsMaterial({
+            color: 0x3a8ffa,
+            size: 0.3,
+            transparent: true,
+            opacity: 0.8,
+            sizeAttenuation: true,
+            vertexColors: true
+        });
+        // Vibration sources
+        const vibrationSources = [];
+        let isAddingVibration = false;
+        // UI elements
+        const ui = {
+            particleCount: document.getElementById('particleCount'),
+            particleSize: document.getElementById('particleSize'),
+            density: document.getElementById('density'),
+            vibrationStrength: document.getElementById('vibrationStrength'),
+            vibrationFrequency: document.getElementById('vibrationFrequency'),
+            waveType: document.getElementById('waveType'),
+            addVibration: document.getElementById('addVibration'),
+            clearVibrations: document.getElementById('clearVibrations'),
+            countDisplay: document.getElementById('countDisplay'),
+            sizeDisplay: document.getElementById('sizeDisplay'),
+            densityDisplay: document.getElementById('densityDisplay'),
+            strengthDisplay: document.getElementById('strengthDisplay'),
+            frequencyDisplay: document.getElementById('frequencyDisplay')
+        };
+        // Current settings
+        let currentSettings = {
+            particleCount: 200,
+            particleSize: 0.3,
+            density: 1.0,
+            vibrationStrength: 3,
+            vibrationFrequency: 5,
+            waveType: 'sine'
+        };
+        // Mouse/touch variables
+        let isDragging = false;
+        let draggedParticle = null;
+        let mouse = new THREE.Vector2();
+        let raycaster = new THREE.Raycaster();
+        let mouseDownPosition = null;
+        let particlePositions = [];
+        let particleVelocities = [];
+        let particleAccelerations = [];
+        let particleColors = [];
+        // Initialize the scene
+        function init() {
+            // Set up camera
+            camera.position.z = 10;
+            camera.position.y = 5;
+            // Create water particles
+            updateParticles();
+            // Set up event listeners
+            setupEventListeners();
+            // Start animation loop
+            animate();
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        // Create water particles
+        function updateParticles() {
+            // Clear

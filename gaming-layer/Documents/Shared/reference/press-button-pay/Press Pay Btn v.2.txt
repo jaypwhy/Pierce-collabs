@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Btn Press Pay Btn - Free Money for All!</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      font-size: 3rem;
+      color: #ff6b6b;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    }
+    #money-display {
+      font-size: 2.5rem;
+      margin: 20px 0;
+      font-weight: bold;
+      color: #ffd700;
+    }
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    #click-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    #pay-btn {
+      background-color: #ff9800;
+      color: white;
+    }
+    #unlock-btn {
+      background-color: #673AB7;
+      color: white;
+    }
+    #upgrade-btn {
+      background-color: #2196F3;
+      color: white;
+    }
+    #secret-btn {
+      background-color: #9C27B0;
+      color: white;
+      font-size: 1rem;
+    }
+    #reward {
+      margin: 20px 0;
+      font-size: 1.5rem;
+      min-height: 50px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      display: none;
+    }
+    #stats {
+      margin: 20px 0;
+      font-size: 1.1rem;
+      color: #555;
+    }
+    .pi-badge {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #ff6b6b;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      z-index: 100;
+    }
+  </style>
+  <script>
+    // Game state
+    let money = 0;
+    let clicks = 0;
+    let unlocks = 0;
+    let upgrades = 0;
+    let clickMultiplier = 1;
+    let secretButtonUnlocked = false;
+    let secretClicks = 0;
+    // DOM elements
+    const moneyDisplay = document.getElementById('money-display');
+    const clickBtn = document.getElementById('click-btn');
+    const payBtn = document.getElementById('pay-btn');
+    const unlockBtn = document.getElementById('unlock-btn');
+    const upgradeBtn = document.getElementById('upgrade-btn');
+    const secretBtn = document.getElementById('secret-btn');
+    const rewardDiv = document.getElementById('reward');
+    const statsDiv = document.getElementById('stats');
+    const buttonContainer = document.querySelector('.button-container');
+    // Update UI
+    function updateUI() {
+      moneyDisplay.textContent = `$${money.toFixed(2)}`;
+      statsDiv.textContent = `Clicks: ${clicks} | Unlocks: ${unlocks} | Upgrades: ${upgrades} | Secret Clicks: ${secretClicks}/1000`;
+      updateButtonStates();
+    }
+    function updateButtonStates() {
+      // Check if we can unlock the secret button
+      if (money >= 3141 && !unlockBtn.disabled) {
+        unlockBtn.disabled = false;
+        unlockBtn.textContent = "Unlock New Button ($3141)";
+      }
+      // Check if we can upgrade
+      if (money >= 31415 && !upgradeBtn.disabled) {
+        upgradeBtn.disabled = false;
+        upgradeBtn.textContent = "Upgrade (Double Clicks! $31415)";
+      }
+      // Check if secret button should be visible
+      if (secretButtonUnlocked && !secretBtn) {
+        const newBtn = document.createElement('button');
+        [newBtn.id](http://newBtn.id) = 'secret-btn';
+        newBtn.textContent = "Secret Pi Button (Click 1000x for $31415)";
+        [newBtn.style](http://newBtn.style).backgroundColor = "#9C27B0";
+        [newBtn.style](http://newBtn.style).fontSize = "1rem";
+        newBtn.addEventListener('click', handleSecretClick);
+        buttonContainer.appendChild(newBtn);
+      }
+    }
+    // Click button (free)
+    clickBtn.addEventListener('click', () => {
+      money += clickMultiplier;
+      clicks++;
+      showReward`+$${(clickMultiplier).toFixed(2)} (Click!)`);
+      updateUI();
+    });
+    // Pay button (costs money but gives more)
+    payBtn.addEventListener('click', () => {
+      if (money >= 314) {
+        money -= 314;
+        money += 3141;
+        clicks++;
+        showReward`You paid $314 and got $3141! (Net +$${(3141-314).toFixed(2)})`);
+        updateUI();
+      } else {
+        showReward("Not enough money! (Go click more buttons.)");
+      }
+    });
+    // Unlock new button
+    unlockBtn.addEventListener('click', () => {
+      if (money >= 3141) {
+        money -= 3141;
+        unlocks++;
+        unlockBtn.disabled = true;
+        secretButtonUnlocked = true;
+        showReward`Unlocked Secret Button! Now you can earn π to the end!`);
+        updateUI();
+      } else {
+        showReward("Not enough money! (Click more buttons.)");
+      }
+    });
+    // Upgrade (double clicks)
+    upgradeBtn.addEventListener('click', () => {
+      if (money >= 31415) {
+        money -= 31415;
+        upgrades++;
+        clickMultiplier *= 2;
+        upgradeBtn.disabled = true;
+        showReward`Upgrade activated! Clicks now give +$${(clickMultiplier).toFixed(2)}! π Power!`);
+        updateUI();
+      } else {
+        showReward("Not enough money! (Click more buttons.)");
+      }
+    });
+    // Secret button functionality
+    function handleSecretClick() {
+      if (secretClicks < 1000) {
+        secretClicks++;
+        showReward`Secret click! ${1000 - secretClicks} more to go...`);
+      } else {
+        money += 31415;
+        secretClicks = 0;
+        showReward`+$31415! π to the end! (π^2 = π²)`);
+        updateUI();
+      }
+    }
+    // Show reward (with humor)
+    function showReward(message) {
+      rewardDiv.innerHTML = `<strong>${message}</strong><br><img src="https://via.placeholder.com/100x50?text=π" alt="π reward" style="max-width:100%; height:auto;">`;
+      [rewardDiv.style](http://rewardDiv.style).display = 'block';
+      setTimeout(() => {
+        [rewardDiv.style](http://rewardDiv.style).display = 'none';
+      }, 3000);
+    }
+    // Initialize the game
+    updateUI();
+</script>
+</head>
+<body>
+  <div class="pi-badge">π Mode: Active!</div>
+  <h1>Btn Press Pay Btn - Free Money for All!</h1>
+  <div id="money-display">$0</div>
+  <div id="stats">Clicks: 0 | Unlocks: 0 | Upgrades: 0</div>
+  <div class="button-container">
+    <button id="click-btn">Click Me (Free)</button>
+    <button id="pay-btn">Pay $314 (But You Get $3141)</button>
+    <button id="unlock-btn" disabled>Unlock New Button ($3141)</button>
+    <button id="upgrade-btn" disabled>Upgrade (Double Clicks! $31415)</button>
+  </div>
+  <div id="reward"></div>
+  
+</body>  
+</html>

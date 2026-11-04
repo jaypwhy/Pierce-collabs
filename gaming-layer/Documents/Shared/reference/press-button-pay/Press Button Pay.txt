@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Btn Press Pay Btn – Free Money for All!</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      text-align: center;
+    }
+    #ui {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+    }
+    button {
+      padding: 8px 15px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #money-display {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    #game-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <h1>Btn Press Pay Btn – Free Money for All!</h1>
+    <div id="money-display">$0</div>
+    <button id="pay-btn">PAY $100</button>
+    <button id="btn-press">PRESS ME!</button>
+    <div id="game-controls">
+      <button id="add-sphere">+ Add Sphere</button>
+      <button id="remove-sphere">- Remove Sphere</button>
+      <button id="reset-grid">Reset Grid</button>
+    </div>
+  </div>
+  <script src="[https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>](https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>)
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    // Controls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+    // UI Elements
+    const ui = {
+      money: document.getElementById('money-display'),
+      payBtn: document.getElementById('pay-btn'),
+      btnPress: document.getElementById('btn-press'),
+      addSphere: document.getElementById('add-sphere'),
+      removeSphere: document.getElementById('remove-sphere'),
+      resetGrid: document.getElementById('reset-grid')
+    };
+    // Game state
+    let spheres = [];
+    let draggedSphere = null;
+    let isDragging = false;
+    let money = 0;
+    let currentSphereCount = 32;
+    let currentSphereSize = 0.5;
+    let currentSpacing = 3.0;
+    let currentGridLayout = 'square';
+    let mouse = new THREE.Vector2();
+    let raycaster = new THREE.Raycaster();
+    // Initialize the game
+    function init() {
+      camera.position.z = 15;
+      updateGrid();
+      setupEventListeners();
+      animate();
+    }
+    // Generate spheres in a grid
+    function updateGrid() {
+      // Clear existing spheres
+      spheres.forEach(sphere => scene.remove(sphere));
+      spheres = [];
+      // Calculate grid dimensions
+      let rows, cols;
+      const count = Math.min(currentSphereCount, 256);
+      switch (currentGridLayout) {
+        case 'pi':
+          rows = Math.floor(Math.sqrt(count / Math.PI));
+          cols = Math.ceil(rows * Math.PI);
+          break;
+        case 'golden':
+          const phi = (1 + Math.sqrt(5)) / 2;
+          rows = Math.floor(Math.sqrt(count / phi));
+          cols = Math.ceil(rows * phi);
+          break;
+        default: // square
+          rows = Math.floor(Math.sqrt(count));
+          cols = Math.ceil(count / rows);
+      }
+      // Create spheres
+      for (let i = 0; i < count; i++) {
+        let row = Math.floor(i / cols);
+        let col = i % cols;
+        let x, y, z;
+        switch (currentGridLayout) {
+          case 'pi':
+            const angle = (i / count) _Math.PI_ 2;
+            x = Math.cos(angle) _(cols_ currentSpacing / 2);
+            y = Math.sin(angle) _(rows_ currentSpacing / 2);
+            z = 0;
+            break;
+          case 'golden':
+            const goldenAngle = (i / count) _Math.PI_ 2 * 0.618;
+            const radius = Math.sqrt(i) * currentSpacing / 2;
+            x = Math.cos(goldenAngle) * radius;
+            y = Math.sin(goldenAngle) * radius;
+            z = 0;
+            break;
+          default: // square
+            x = (col - cols / 2) * currentSpacing;
+            y = (row - rows / 2) * currentSpacing;
+            z = 0;
+        }
+        // Create sphere
+        const geometry = new THREE.SphereGeometry(currentSphereSize, 32, 32);
+        const material = new THREE.MeshStandardMaterial({
+          color: getRandomColor(),
+          roughness: 0.3,
+          metalness: 0.5
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        sphere.position.set(x, y, z);
+        sphere.userData = {
+          originalPosition: sphere.position.clone(),
+          originalSize: currentSphereSize,
+          id: i,
+          layout: currentGridLayout,
+          value: Math.floor(Math.random() * 10) + 1 // Random "value" for "earning"
+        };
+        scene.add(sphere);
+        spheres.push(sphere);
+      }
+    }
+    // Get random color
+    function getRandomColor() {
+      return new THREE.Color(Math.random(), Math.random(), Math.random());
+    }
+    // Event listeners
+    function setupEventListeners() {
+      // Pay button (mini-game)
+      ui.payBtn.addEventListener('click', () => {
+        if (money >= 100) {
+          money -= 100;
+          [ui.money](http://ui.money).textContent = `$${money}`;
+          alert("You paid $100! You got a special reward!");
+          // Add a glowing sphere or particle effect
+          const rewardSphere = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.7 })
+          );
+          rewardSphere.position.set(0, 0, 0);
+          scene.add(rewardSphere);
+          setTimeout(() => scene.remove(rewardSphere), 2000);
+        } else {
+          alert("Not enough money! Earn more by pressing buttons and dragging spheres.");
+        }
+      });
+      // "Btn Press" button (unlocks effects)
+      ui.btnPress.addEventListener('click', () => {
+        money += 50;
+        [ui.money](http://ui.money).textContent = `$${money}`;
+        alert("You pressed the button! +$50");
+        // Add a particle effect
+        for (let i = 0; i < 20; i++) {
+          const particle = new THREE.Mesh(
+            new THREE.SphereGeometry(0.1, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+          );
+          particle.position.set(
+            (Math.random() - 0.5)
