@@ -17,6 +17,9 @@ import { PiScaleBadge } from "~/components/pi-scale-badge";
  *   Courses   : 25 RK + 10 RB + 8 DZ (unbounded material sink)
  *   Frames    : T2 120/60/40 · T3 300/180/120  (cart 56 → 68 → 80 px)
  *   Bays      : 9 / 24 / 54 SE · Re-lay 3 SE per bay (layout queued)
+ *   Powers    : M1 6/16 SE · M2 10 SE · M3 12 SE · M4 4 SE a press
+ *               (arcade-powers.md §3 — earned only, SE only; every one of
+ *               them leaves the wall at 30 bricks / 35 RK on bay 1)
  *   Geometry  : 336×240 field, brick rows 10 px tall, cart 8 px tall,
  *                ram 3 px radius, constant 110 px/s (no ramp)
  * Meta persists in localStorage only. No purchases, no ads, no accounts,
@@ -25,6 +28,14 @@ import { PiScaleBadge } from "~/components/pi-scale-badge";
 
 type Phase = "start" | "run" | "intermission";
 type BrickChar = "W" | "C" | "L";
+
+/* ARCADE POWERS (arcade-powers.md §3) — earned only, spent in SE only.
+ * m1 / m2 / m3 are owned ranks; M4 is charged per press and never stored. */
+interface Powers {
+  m1: number; // THE SIGHT LINE · rank 0..2 · 6 / 16 SE
+  m2: number; // THE STEADY RAM · rank 0..1 · 10 SE
+  m3: number; // THE TALLY BOARD · rank 0..1 · 12 SE
+}
 
 interface Meta {
   saveVersion: 1;
@@ -39,6 +50,7 @@ interface Meta {
   coursesLaid: number;
   bricksLaid: number;
   badges: string[];
+  powers: Powers;
   stats: {
     runs: number;
     bricks: number;
@@ -46,6 +58,7 @@ interface Meta {
     wallsSealed: number;
     ramsLost: number;
     perfectRuns: number;
+    m4Presses: number;
   };
 }
 
@@ -75,6 +88,9 @@ interface RunState {
   runDz: number;
   wallSealed: boolean;
   forfeited: number;
+  speed: number; // ram speed px/s — 110, or 93.5 with M2
+  spareArmed: boolean; // M4: the next lost ram costs 0 SW
+  m4Uses: number; // SPARE RAM presses this run — never persisted
   // physics
   bx: number;
   by: number;
@@ -126,6 +142,19 @@ const FRAME2 = { rk: 120, rb: 60, dz: 40 };
 const FRAME3 = { rk: 300, rb: 180, dz: 120 };
 const BAY_COST: Record<number, number> = { 1: 0, 2: 9, 3: 24, 4: 54 };
 const RELAY_COST = 3;
+
+/* ---------------------- ARCADE POWERS — constants -------------------------
+ * Copied verbatim from arcade-powers.md §7 (BUILD NOTES). Do not re-derive.
+ * Every price is in SE, the currency finishing masonry pays. Nothing here
+ * writes to a brick's yield, to the Swing grant, or to a bay's wall.        */
+const M1_COST = [0, 6, 16]; // SE by rank; rank 0 = not owned
+const M2_COST = 10; // SE
+const M3_COST = 12; // SE
+const M4_COST = 4; // SE per press, unbounded
+const M1_BOUNCES = [0, 1, 2]; // sight-line bounces by rank
+const M2_SPEED = 0.85; // ram speed multiplier
+const M4_SAVE_SW = 5; // one press = one lost ram forgiven
+
 const SEED: {
   rk: number;
   rb: number;
@@ -207,7 +236,16 @@ const SEED_META: Meta = {
   coursesLaid: 0,
   bricksLaid: 0,
   badges: [],
-  stats: { runs: 0, bricks: 0, rows: 0, wallsSealed: 0, ramsLost: 0, perfectRuns: 0 },
+  powers: { m1: 0, m2: 0, m3: 0 },
+  stats: {
+    runs: 0,
+    bricks: 0,
+    rows: 0,
+    wallsSealed: 0,
+    ramsLost: 0,
+    perfectRuns: 0,
+    m4Presses: 0,
+  },
 };
 
 /* ------------------------------ helpers ---------------------------------- */
@@ -231,6 +269,7 @@ function loadMeta(): Meta {
         ...SEED_META.layoutIndex,
         ...(parsed.layoutIndex ?? {}),
       },
+      powers: { ...SEED_META.powers, ...(parsed.powers ?? {}) },
       stats: { ...SEED_META.stats, ...(parsed.stats ?? {}) },
     };
   } catch {
@@ -311,8 +350,8 @@ function stepRun(r: RunState, dt: number): GameEvent[] {
     ) {
       const off = clamp((r.bx - center) / (r.cartW / 2), -1, 1);
       const ang = (off * MAX_ANGLE_DEG * Math.PI) / 180;
-      r.bvx = Math.sin(ang) * BALL_SPEED;
-      r.bvy = -Math.cos(ang) * BALL_SPEED;
+      r.bvx = Math.sin(ang) * r.speed;
+      r.bvy = -Math.cos(ang) * r.speed;
       r.by = CART_Y - BALL_R;
       evs.push({ kind: "return" });
     }
@@ -325,14 +364,14 @@ function stepRun(r: RunState, dt: number): GameEvent[] {
 
   // keep constant speed + minimum vertical component (deterministic)
   const speed = Math.hypot(r.bvx, r.bvy);
-  if (speed > 0.0001 && Math.abs(speed - BALL_SPEED) > 0.5) {
-    const k = BALL_SPEED / speed;
+  if (speed > 0.0001 && Math.abs(speed - r.speed) > 0.5) {
+    const k = r.speed / speed;
     r.bvx *= k;
     r.bvy *= k;
   }
   if (Math.abs(r.bvy) < MIN_VY) {
     r.bvy = r.bvy < 0 ? -MIN_VY : MIN_VY;
-    const k = Math.sqrt(Math.max(0, BALL_SPEED * BALL_SPEED - r.bvy * r.bvy));
+    const k = Math.sqrt(Math.max(0, r.speed * r.speed - r.bvy * r.bvy));
     r.bvx = (r.bvx < 0 ? -1 : 1) * k;
   }
   return evs;
@@ -352,6 +391,7 @@ function exportSave(meta: Meta, filename: string) {
     coursesLaid: meta.coursesLaid,
     bricksLaid: meta.bricksLaid,
     badges: [...meta.badges],
+    powers: { ...meta.powers },
     stats: { ...meta.stats },
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {
@@ -442,6 +482,7 @@ function BrickBreak() {
     setMeta((m) => ({
       ...m,
       stats: {
+        ...m.stats,
         runs: m.stats.runs + 1,
         bricks: m.stats.bricks + r.bricksBroken,
         rows: m.stats.rows + r.rowsCleared,
@@ -479,6 +520,11 @@ function BrickBreak() {
       runDz: 0,
       wallSealed: false,
       forfeited: 0,
+      // M2 THE STEADY RAM — the ram travels at 85% speed. Nothing in the
+      // transform is a rate per second, so this moves no payout (A16).
+      speed: BALL_SPEED * (meta.powers.m2 > 0 ? M2_SPEED : 1),
+      spareArmed: false,
+      m4Uses: 0,
       bx: cx,
       by: CART_Y - BALL_R,
       bvx: 0,
@@ -501,7 +547,7 @@ function BrickBreak() {
     r.bx = clamp(r.cartX + r.cartW / 2, BALL_R, FIELD_W - BALL_R);
     r.by = CART_Y - BALL_R;
     r.bvx = 0;
-    r.bvy = -BALL_SPEED;
+    r.bvy = -r.speed;
     setTick((t) => t + 1);
   };
 
@@ -619,6 +665,36 @@ function BrickBreak() {
         ctx.lineTo(bx, CART_Y - 4);
         ctx.stroke();
       }
+      /* M1 THE SIGHT LINE — a dotted line showing where the ram will travel
+       * before you release it: one bounce at rank 1, two at rank 2. The
+       * return leg is drawn 3 px to the side so the two legs are visible
+       * (the rendering is display-only; nothing here touches a yield). */
+      const bounces = M1_BOUNCES[m.powers.m1] ?? 0;
+      if (r?.resting && bounces > 0) {
+        const startY = CART_Y - BALL_R - 2;
+        ctx.save();
+        ctx.setLineDash([3, 3]);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(190, 242, 100, 0.65)";
+        ctx.beginPath();
+        ctx.moveTo(bx, startY);
+        ctx.lineTo(bx, BALL_R); // leg 1 — up to the top wall
+        ctx.stroke();
+        if (bounces >= 2) {
+          ctx.strokeStyle = "rgba(125, 211, 252, 0.65)";
+          ctx.beginPath();
+          ctx.moveTo(bx + 3, BALL_R);
+          ctx.lineTo(bx + 3, startY); // leg 2 — back down to the cart
+          ctx.stroke();
+        }
+        ctx.restore();
+        ctx.fillStyle = "rgba(190, 242, 100, 0.9)"; // bounce 1 marker
+        ctx.fillRect(bx - 2, BALL_R - 1, 4, 2);
+        if (bounces >= 2) {
+          ctx.fillStyle = "rgba(125, 211, 252, 0.9)"; // bounce 2 marker
+          ctx.fillRect(bx + 1, startY - 1, 4, 2);
+        }
+      }
     };
 
     const drawBrick = (c: CanvasRenderingContext2D, b: Brick) => {
@@ -656,13 +732,20 @@ function BrickBreak() {
               setTick((t) => t + 1);
             } else if (ev.kind === "lost") {
               r.ramsLost += 1;
-              r.sw = Math.max(0, r.sw - SW_LOST_RAM);
+              // M4 THE SPARE RAM — the 4 SE was already spent on the press;
+              // this one lost ram is forgiven. The SW *grant* is untouched.
+              if (r.spareArmed) {
+                r.spareArmed = false;
+                flash(`SPARE RAM USED — ${M4_SAVE_SW} SW FORGIVEN (0 SPENT)`);
+              } else {
+                r.sw = Math.max(0, r.sw - SW_LOST_RAM);
+                flash(`RAM LOST  −${SW_LOST_RAM} SW`);
+              }
               r.resting = true;
               r.bx = clamp(r.cartX + r.cartW / 2, BALL_R, FIELD_W - BALL_R);
               r.by = CART_Y - BALL_R;
               r.bvx = 0;
               r.bvy = 0;
-              flash(`RAM LOST  −5 SW`);
               setTick((t) => t + 1);
             }
           }
@@ -708,6 +791,12 @@ function BrickBreak() {
           runRk: r.runRk,
           runRb: r.runRb,
           runDz: r.runDz,
+          speed: r.speed,
+          spareArmed: r.spareArmed,
+          m4Uses: r.m4Uses,
+          powers: { ...m.powers },
+          // the published ceiling in EVERY power state (arcade-powers.md A10)
+          ceiling: { ...BAY_CEILING[r.bay] },
           bricks: r.bricks
             .filter((b) => !b.dead)
             .map((b) => ({ x: b.x, y: b.y, w: b.w, h: b.h, row: b.row, col: b.col })),
@@ -834,6 +923,62 @@ function BrickBreak() {
     flash(`LAYOUT ${(m.layoutIndex[bay] ?? 0) + 2} QUEUED — 3 SE SPENT`);
   };
 
+  /* ---------------------------- arcade powers ---------------------------- */
+
+  /* Powers are bought with Seals and nothing else. M1 has two ranks; M2 and
+   * M3 have one each. M4 has no purchase — it is 4 SE a press, in a run. */
+  const buyPower = (id: "m1" | "m2" | "m3") => {
+    const p = metaRef.current.powers;
+    const price =
+      id === "m1" ? M1_COST[Math.min(2, p.m1 + 1)] : id === "m2" ? M2_COST : M3_COST;
+    const maxed = id === "m1" ? p.m1 >= 2 : p[id] >= 1;
+    if (maxed) return;
+    if (metaRef.current.se < price) {
+      flash(`NEEDS ${price} SE  (have ${metaRef.current.se})`);
+      return;
+    }
+    setMeta((mm) => {
+      const cur = mm.powers;
+      const already = id === "m1" ? cur.m1 >= 2 : cur[id] >= 1;
+      if (already || mm.se < price) return mm;
+      const next: Powers = { ...cur };
+      if (id === "m1") next.m1 = Math.min(2, cur.m1 + 1);
+      else next[id] = 1;
+      return { ...mm, se: mm.se - price, powers: next };
+    });
+    const label =
+      id === "m1"
+        ? `M1 THE SIGHT LINE r${Math.min(2, p.m1 + 1)}`
+        : id === "m2"
+          ? "M2 THE STEADY RAM"
+          : "M3 THE TALLY BOARD";
+    flash(`${label} EARNED — ${price} SE SPENT`);
+  };
+
+  /* M4 THE SPARE RAM — 4 SE a press, charged only when pressed. It buys back
+   * run fuel (one lost ram's 5 SW), never a brick and never the grant. */
+  const buySpareRam = () => {
+    const r = runRef.current;
+    if (!r || phaseRef.current !== "run") return;
+    if (r.spareArmed) {
+      flash("A SPARE RAM IS ALREADY ARMED");
+      return;
+    }
+    if (metaRef.current.se < M4_COST) {
+      flash(`SPARE RAM NEEDS ${M4_COST} SE  (have ${metaRef.current.se})`);
+      return;
+    }
+    r.spareArmed = true;
+    r.m4Uses += 1;
+    setMeta((mm) => ({
+      ...mm,
+      se: mm.se - M4_COST,
+      stats: { ...mm.stats, m4Presses: mm.stats.m4Presses + 1 },
+    }));
+    flash(`SPARE RAM ARMED — ${M4_COST} SE SPENT · NEXT LOST RAM COSTS 0 SW`);
+    setTick((t) => t + 1);
+  };
+
   const resetSave = () => {
     if (!confirmReset) {
       setConfirmReset(true);
@@ -899,7 +1044,7 @@ function BrickBreak() {
       <main className="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         {/* ------------------------- left: loop + cabinet ---------------- */}
         <div className="min-w-0">
-          <LoopPanel selectedBay={selectedBay} />
+          <LoopPanel selectedBay={selectedBay} powers={m.powers} />
           <div className="relative mt-4 border-4 border-lime-500/50 bg-[#0c140c] p-4 shadow-[8px_8px_0_rgba(0,0,0,0.6)]">
             <div className="scanlines pointer-events-none absolute inset-0 z-10" />
             <canvas
@@ -927,6 +1072,7 @@ function BrickBreak() {
                 meta={m}
                 notice={notice}
                 onEnd={() => endRun("manual")}
+                onSpareRam={buySpareRam}
               />
             )}
             {phase === "intermission" && (
@@ -972,9 +1118,13 @@ function BrickBreak() {
             <ul className="space-y-1 text-[10px] leading-relaxed text-lime-100/80">
               <li>· Earned: +1 per row cleared · +3 per wall sealed</li>
               <li>· Spent: bay unlocks 9 / 24 / 54 SE · re-lay 3 SE</li>
-              <li>· Never sold. Seals buy walls, nothing else.</li>
+              <li>· Spent: powers 6 + 16 + 10 + 12 = 44 SE</li>
+              <li>· Spent: 4 SE a SPARE RAM press, unbounded</li>
+              <li>· Never sold. Seals buy walls and powers, nothing else.</li>
             </ul>
           </Panel>
+
+          <PowersPanel meta={m} onBuy={buyPower} />
 
           <Panel title="BAYS — UNLOCK TABLE (L10)">
             <div className="grid grid-cols-2 gap-2">
@@ -1065,12 +1215,18 @@ function RunScreen({
   meta,
   notice,
   onEnd,
+  onSpareRam,
 }: {
   run: RunState;
   meta: Meta;
   notice: string | null;
   onEnd: () => void;
+  onSpareRam: () => void;
 }) {
+  const p = meta.powers;
+  /* M3 THE TALLY BOARD — every value here is already published */
+  const bricksLeft = run.bricks.filter((b) => !b.dead).length;
+  const seToBay2 = Math.max(0, BAY_COST[2] - meta.se);
   return (
     <div className="relative z-20 flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-2 border-2 border-lime-500/20 p-2 text-[10px] sm:grid-cols-4">
@@ -1120,17 +1276,52 @@ function RunScreen({
         {notice ?? (run.resting ? "RAM ON CART — SPACE / CLICK TO LAUNCH · ← → OR MOUSE TO MOVE" : "")}
       </div>
 
+      {/* M3 THE TALLY BOARD — prints only published numbers, pays no unit */}
+      {p.m3 > 0 && (
+        <div
+          data-testid="tally-board"
+          className="border-2 border-dashed border-lime-500/40 bg-lime-950/20 p-2 font-pixel text-[8px] leading-relaxed text-lime-200"
+        >
+          TALLY BOARD · SW {run.sw} · BRICKS {run.bricksBroken} · {run.sw} SW LEFT,{" "}
+          {bricksLeft} BRICKS TO A SEAL · SE TO BAY 2: {seToBay2}
+          <span className="ml-1 text-lime-100/40">
+            ({run.speed.toFixed(1)} PX/S RAM · {run.returns} RETURNS · {run.ramsLost}{" "}
+            LOST)
+          </span>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-[9px] text-lime-100/40">
           SE {meta.se} IN THE BANK · {meta.dz} DZ IN THE PILE
         </span>
-        <button
-          data-testid="end-run"
-          onClick={onEnd}
-          className="pixel-btn bg-neutral-900 px-3 py-2 text-[8px] text-neutral-300"
-        >
-          END RUN {run.sw > 0 ? `(−${run.sw} SW FORFEITED)` : ""}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            data-testid="spare-ram"
+            onClick={onSpareRam}
+            disabled={meta.se < M4_COST || run.spareArmed}
+            className={`pixel-btn px-3 py-2 text-[8px] ${
+              meta.se >= M4_COST && !run.spareArmed
+                ? "bg-lime-800 text-lime-50"
+                : "bg-neutral-900 text-neutral-500"
+            }`}
+            title={`M4 THE SPARE RAM — ${M4_COST} SE, charged only when pressed`}
+          >
+            {run.spareArmed
+              ? `SPARE RAM ARMED ✓`
+              : `🪵 SPARE RAM ${M4_COST} SE`}
+            <span className="ml-1 text-[7px] opacity-70">
+              ({run.m4Uses} USED · HAVE {meta.se})
+            </span>
+          </button>
+          <button
+            data-testid="end-run"
+            onClick={onEnd}
+            className="pixel-btn bg-neutral-900 px-3 py-2 text-[8px] text-neutral-300"
+          >
+            END RUN {run.sw > 0 ? `(−${run.sw} SW FORFEITED)` : ""}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1436,7 +1627,13 @@ function IntermissionScreen({
 
 /* ------------------------------ LOOP panel ------------------------------- */
 
-function LoopPanel({ selectedBay }: { selectedBay: number }) {
+function LoopPanel({
+  selectedBay,
+  powers,
+}: {
+  selectedBay: number;
+  powers: Powers;
+}) {
   const c = BAY_CEILING[selectedBay];
   const counts = brickCounts(selectedBay);
   return (
@@ -1563,11 +1760,156 @@ function LoopPanel({ selectedBay }: { selectedBay: number }) {
           </p>
         </div>
       </div>
+
+      {/* arcade-powers.md §7 item 5 — the ceiling sentence, verbatim */}
+      <p
+        data-testid="powers-ceiling-line"
+        className="mt-3 border-2 border-amber-500/40 bg-amber-950/20 p-2 font-pixel text-[8px] leading-relaxed text-amber-200"
+      >
+        POWERS — the ceiling is the wall — 30 bricks on bay 1, with every power on
+        <span className="ml-1 text-amber-100/50">
+          · M1 {powers.m1}/2 · M2 {powers.m2 ? "OWNED" : "—"} · M3{" "}
+          {powers.m3 ? "OWNED" : "—"} · 35 RK · 35 RB · 40 DZ · 8 SE on bay 1
+        </span>
+      </p>
     </section>
   );
 }
 
 /* --------------------------- small pieces -------------------------------- */
+
+function PowersPanel({
+  meta,
+  onBuy,
+}: {
+  meta: Meta;
+  onBuy: (id: "m1" | "m2" | "m3") => void;
+}) {
+  const p = meta.powers;
+  return (
+    <Panel title="POWERS — EARNED WITH SEALS, NEVER SOLD">
+      <p className="mb-2 text-[9px] leading-relaxed text-lime-100/50">
+        Four powers, priced in SE — the currency finishing masonry pays. They
+        move what you can DO, never what the wall can PAY: the ceiling is the
+        wall, 30 bricks and 35 RK on bay 1, in every power state.
+      </p>
+
+      <PowerRow
+        testid="power-buy-m1"
+        name="M1 THE SIGHT LINE"
+        state={p.m1 >= 2 ? "r2/2 · MAX" : p.m1 === 1 ? "r1/2" : "NOT OWNED"}
+        effect={
+          p.m1 === 0
+            ? "A dotted line shows where the ram will travel before you release it — one bounce, then two at rank 2."
+            : p.m1 === 1
+              ? `The dotted line now shows ${M1_BOUNCES[1]} bounce. Rank 2 shows ${M1_BOUNCES[2]}.`
+              : `The dotted line shows ${M1_BOUNCES[2]} bounces. Max rank.`
+        }
+        price={p.m1 >= 2 ? null : M1_COST[p.m1 + 1]}
+        disabledLabel={`M1 r${p.m1 + 1} NEEDS ${M1_COST[p.m1 + 1]} SE`}
+        se={meta.se}
+        onBuy={() => onBuy("m1")}
+      />
+
+      <PowerRow
+        testid="power-buy-m2"
+        name="M2 THE STEADY RAM"
+        state={p.m2 ? "OWNED" : "NOT OWNED"}
+        effect={`The ram travels at ${Math.round(M2_SPEED * 100)}% speed, so the cart has longer to slide under it. Time, not material.`}
+        price={p.m2 ? null : M2_COST}
+        disabledLabel={`M2 NEEDS ${M2_COST} SE`}
+        se={meta.se}
+        onBuy={() => onBuy("m2")}
+      />
+
+      <PowerRow
+        testid="power-buy-m3"
+        name="M3 THE TALLY BOARD"
+        state={p.m3 ? "OWNED" : "NOT OWNED"}
+        effect="The board prints Swing, bricks, bricks to a seal and SE to bay 2 before you commit. Zero units."
+        price={p.m3 ? null : M3_COST}
+        disabledLabel={`M3 NEEDS ${M3_COST} SE`}
+        se={meta.se}
+        onBuy={() => onBuy("m3")}
+      />
+
+      <div className="mt-2 border-2 border-dashed border-cyan-500/40 bg-cyan-950/20 p-2">
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="font-pixel text-[8px] text-cyan-200">
+            M4 THE SPARE RAM
+          </span>
+          <span className="font-pixel text-[8px] text-cyan-300">
+            {M4_COST} SE A PRESS · UNBOUNDED
+          </span>
+        </div>
+        <p className="mt-1 text-[9px] leading-relaxed text-lime-100/70">
+          The next lost ram costs 0 SW instead of {SW_LOST_RAM}. Pressed inside a
+          run, charged only when pressed, one armed at a time. It buys run fuel
+          back at {M4_COST} SE — never a brick, and never the Swing grant.
+        </p>
+        <p className="mt-1 text-[9px] text-lime-100/40">
+          Not a purchase — no rank to own. The unbounded sink for a player who
+          already has every wall.
+        </p>
+      </div>
+
+      <p className="mt-2 text-[9px] leading-relaxed text-lime-100/40">
+        Finite power list: 6 + 16 + 10 + 12 = 44 SE (A20). Cheapest first: M1 r1
+        6 → M2 10 → M3 12 → M1 r2 16. No power sets a brick&apos;s yield, a row&apos;s
+        Seal or the Swing grant (A15, A16).
+      </p>
+    </Panel>
+  );
+}
+
+function PowerRow({
+  testid,
+  name,
+  state,
+  effect,
+  price,
+  disabledLabel,
+  se,
+  onBuy,
+}: {
+  testid: string;
+  name: string;
+  state: string;
+  effect: string;
+  price: number | null;
+  disabledLabel: string;
+  se: number;
+  onBuy: () => void;
+}) {
+  const afford = price !== null && se >= price;
+  return (
+    <div className="mt-2 border-2 border-lime-500/20 bg-lime-950/20 p-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="font-pixel text-[8px] text-lime-200">{name}</span>
+        <span
+          className={`font-pixel text-[8px] ${
+            price === null ? "text-lime-400" : "text-amber-300"
+          }`}
+        >
+          {state}
+        </span>
+      </div>
+      <p className="mt-1 text-[9px] leading-relaxed text-lime-100/70">{effect}</p>
+      {price !== null && (
+        <button
+          data-testid={testid}
+          onClick={onBuy}
+          disabled={!afford}
+          className={`pixel-btn mt-2 w-full px-1 py-1 text-[8px] ${
+            afford ? "bg-lime-300 text-neutral-950" : "bg-neutral-900 text-neutral-500"
+          }`}
+        >
+          {afford ? `▶ BUY — ${price} SE` : `${disabledLabel} — HAVE ${se}`}
+        </button>
+      )}
+    </div>
+  );
+}
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
