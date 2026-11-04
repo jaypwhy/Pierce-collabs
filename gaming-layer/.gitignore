@@ -1,0 +1,22 @@
+# dependencies & build output
+site/node_modules/
+site/dist/
+site/.run/
+site/.vite/
+site-package/
+_scratch/
+*.log
+
+# scratch dumps from verification runs (not source)
+pa-*.txt
+cts-*.txt
+verify*.txt
+otherproj*.txt
+ordinal-lines.txt
+shots3.txt
+docs-verify.txt
+content-check.txt
+
+# secrets
+.env
+.dropkey

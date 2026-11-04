@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@layer base {
+  html,
+  body {
+    @apply bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100;
+  }
+}
+
+/* --- Gaming Layer / Bin Runner retro helpers (plain CSS, used by the demo route) --- */
+
+.font-pixel {
+  font-family: "Press Start 2P", "Courier New", monospace;
+}
+
+.pixel-btn {
+  font-family: "Press Start 2P", "Courier New", monospace;
+  border: 3px solid currentColor;
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  user-select: none;
+}
+.pixel-btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 0 rgba(0, 0, 0, 0.85);
+}
+.pixel-btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.85);
+}
+.pixel-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.blink {
+  animation: br-blink 1s steps(2, jump-none) infinite;
+}
+@keyframes br-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}

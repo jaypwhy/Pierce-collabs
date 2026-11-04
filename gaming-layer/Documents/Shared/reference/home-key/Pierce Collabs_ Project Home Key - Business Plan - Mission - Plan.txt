@@ -1,0 +1,153 @@
+Mission:  
+Project Home Key · San Diego, CA
+
+# Everyone has a place to call home.
+
+Project Home Key is a **soft landing initiative** and a **new-norm movement**: free housing, free health, free food, free hygiene, regenerative income, and zero-entropy travel — all working as one system called **RUHBI**, starting in San Diego, California.
+The living strategy your team works from.
+**The six pillars**  
+These six pillars are the whole of a secure life. Each one is free, each one is for everyone, and each one is verified: the free help finder lists real San Diego programs that exist today.
+
+1.  Free Independent Personal Housing  
+    Every person has a place of their own to live — no rent, no strings, no shelter bunk.
+    
+2.  Free Universal Health  
+    Health care is free and open to everyone, no matter your income or paperwork.
+    
+3.  Free Food Resources  
+    Free, dignified food — groceries and meals — for anyone who needs it.
+    
+4.  Free Hygiene Resources  
+    Free places to shower, wash clothes, and care for yourself with dignity.
+    
+5.  Free Regenerative Independent Personal Income  
+    A steady income that covers your bills and grows your savings over time.
+    
+6.  Free Zero Entropy Travel  
+    Free, easy ways to get around the city without spending money or wasting energy.
+    
+
+## What is RUHBI?
+
+RUHBI is the system that ties the six pillars together. Today, finding help means hunting through dozens of separate programs and applications. RUHBI turns that into **one navigable system**: you land in a stable home first, and the rest — health care, food, hygiene, income, and getting around — is already there waiting for you.
+That is what a **soft landing** means. You do not have to fix everything before you can rest. You rest first, and the support system holds you while you rebuild.
+
+## The new norm: housing like libraries and parks
+
+This is a **universal model for everyone**. Free housing is not a charity for a few — it is how a healthy city works, the way public libraries and parks belong to all of us.
+Unsheltered people are served **first**, as the proof case: when those hardest to house thrive, the model is proven for every San Diegan, and every city after. The goal of this movement is that free housing initiatives become **normal city infrastructure** — planned, funded, and open to everyone, everywhere.
+
+## Latest plan
+
+Mark this plan read so the team knows it has your approval.
+
+# Project Home Key — Founding Plan (Rev 7)
+
+## What we're building
+
+**Project Home Key** is a "Soft Landing" initiative **and a new-norm movement**: free housing, free health, free food & hygiene resources, free regenerative personal income, and free zero-entropy travel, delivered as one navigable system (RUHBI) — starting in San Diego, California, and built as a model meant to be replicated everywhere. Mission line: **"Everyone has a place to call home."**
+Two layers: the **immediate layer** (a verified navigator of free resources that exist right now) and the **norm layer** (the public case that free universal housing is standard infrastructure, like libraries and parks).
+
+## Who it's for
+
+**Everyone — a universal model, not a niche program.** Unsheltered and housing-insecure San Diegans served first as the proof case; case workers and partners navigate with them; the norm is every resident, every city.
+
+## What's live (all verified on the published site)
+
+*   **Mission page** — hero line, six pillars verbatim, RUHBI soft-landing concept, universal-norm vision
+    
+*   **Resource Navigator — 29 verified entries**: 17 core San Diego resources + 12 wellness-animal resources, honest status badges, sources + check dates on every entry (SDHC Section 8 waitlist closure Feb 1, 2026 flagged honestly)
+    
+*   **The Studies page** — five case studies (Stockton SEED, Finland Housing First, Berlin Wohnen für Hilfe, GiveDirectly Kenya, US/Canada Housing First trials) with cited numbers and a strong-vs-weak honesty layer
+    
+*   **Pilot proposal page** — Living-in-Development/Renovation track, wellness-animal accommodations, quadrupled generational-padding budgets, and the **Regenerative Commons** (8 channels, labeled vision-not-commitment)
+    
+*   **Seed Program page (2026-09-07)** — Phase 0 status badge (0 housed, no funds raised), 12-cohort/5–25-participant structure, six pillars as one system, phased roadmap (later phases labeled framework-not-commitment), five partner-type cards, entity-pending disclosure verbatim, and the can/cannot-promise box. Verified: no real organization is shown as a partner or endorser.
+    
+*   **The Framework page (2026-09-30)** — the two participation models as equal side-by-side cards (Working / Non-working, every base line identical), zero-barrier UI onboarding, restorative economic justice, **sacred protections as a visually distinct absolute block**, reintegration principles as operating rules, 12-cohort summary, honest footer. Verified: nothing presented as funded/launched; the only unconditional claim is that the sacred protections bind already.
+    
+
+## Seed Program operating system
+
+*   **DOC 1 filed and owner-reviewed (2026-09-28)** at `/home/team/shared/docs/seed-program-doc1-cohorts-and-models.md`: cohort charter (need-not-merit, opt-out enrollment, identical base packages, rights never leveraged, housing never sunsets), 3-wave gated phasing (1–2 → 3–6 → 7–12, misses published, a gate miss never de-funds anyone), 9 pocket-selection principles (city-only, transit-first, neighborhood consent before any unit is signed), staffing ~3.5–4.5 FTE per cohort with ≤15 caseload caps, the two models side by side, zero-barrier onboarding, sacred protections with enforcement mechanics, reintegration rules, and **15+ honest open questions** — including the real budget gap: **staff payroll is not inside the quadrupled participant-side figures** and needs a costing pass before Wave 1.
+    
+*   **DOC 2 completed, filed, and owner-reviewed (2026-10-01)** at `/home/team/shared/docs/seed-program-doc2-household-and-family-framework.md`: household definition (one slot per household, all members individually enrolled), unit-size scaling, children (schooling, childcare co-op, mandatory-reporting-vs-privacy boundary stated honestly), reunification by choice only, elder/kinship/multi-adult households (paid kinship care work), animals at household scale, per-adult stipend construction with individual cushion ownership, household governance, **DV safety planning as a non-negotiable override**, household error controls, cost tables by household size, sacred protections extended to children/elders.
+    
+*   **Amendment A applied (2026-10-01)** at `/home/team/shared/docs/seed-program-amendment-a-care-education-supplies-and-food-line.md`: **care & education supplies line** (teachers/trainers/educational staff and caretakers never pay for the tools of their work out of pocket; teacher $2,000–$4,000/yr, caregiver $200–$400/mo — never deducted, never conditional) and the **FOOD line** (groceries = own named protected line at $1,600–$2,200/mo per adult = 4× the verified $390–$540 floor, ring-fenced inside existing variable bands, adds $0; per-child ~$400–$800/mo). Verified anchor: NCES Data Point 2018097rev — teachers who spent own money: mean $478, median $297.
+    
+*   **Amendment B applied (2026-10-01)** at `/home/team/shared/docs/seed-program-amendment-b-movement-and-logistics-framework.md`: movement & logistics — **"nobody carries their own transition alone"**; 1.0 FTE Movement Coordinator per wave + paid participant move-crew (living wage floor, structural firewall); DV bridge (unmarked trucks, pets + children same-day, premium carried regardless of cost); bands $1,200–$7,500 per transition; Brief G (moving/storage) added to the partner package; verified anchor: HireAHelper $120–$160/hr (2 movers + truck, local full-service).
+    
+*   **Vehicle & Mobility Framework — in flight (2026-10-01, standalone)**: the owner decided **lease per pocket (never buy), one unbranded safety-transfer vehicle always maintained, a carpool/car2go-style community shared-vehicle pool in designated parking (exploration), and a participant ownership pathway preserved as an option** — under the owner's ruling **"Living and vehicles are separate"**: a standalone framework document beside the operating docs, pointer stamps only in DOC 1/Amendment B, fleet costs never mixed into living/household budgets.
+    
+*   **Internal consistency flag from DOC 1:** the published Seed page says Phase 1 = all 12 cohorts; the operating plan deploys three gated waves. Public wording to be aligned before the next publish.
+    
+
+## Owner directives locked in
+
+*   **Quadruple directive (generational padding)**: all budget figures 4x — trauma of housing instability is generational; real-cost verification (2026-09-06) validates this: pre-quad renovation CapEx was 2–3x underpriced vs. verified SD rehab costs ($50K–$75K for a modest 1,000 sq ft)
+    
+*   **Cleaning services and connectivity are RIGHTS** — permanent budget lines, never removed or reduced
+    
+*   **Wellness animals are requirements, not extras** — pet-friendly housing required; Pet Setup $2K–$6K CapEx; pet care $600–$1,200/mo; settling-in padding for people AND animals
+    
+*   **Care & education supplies are program-funded (2026-10-01)** — caretakers and teachers/professors/trainers/educational staff in our system never pay for the tools of their work out of pocket; dedicated line, never deducted from personal stipends, quadruple applied (Amendment A)
+    
+*   **Food is a named, protected line (2026-10-01)** — groceries at 4× the verified floor per adult; nobody lives off $100/day (Amendment A)
+    
+*   **Vehicle decision (2026-10-01): lease per pocket, never buy; one unbranded vehicle ALWAYS maintained for safety transfers; community shared vehicles in designated parking factored in (carpool/car2go-style); a pathway to ownership is preserved as an option** — the owner's words: "I paid off my car - great feeling - an option as well." Governing principle: **"Living and vehicles are separate"** — vehicles live in their own standalone framework; budgets never mix.
+    
+*   **Mobile health lab exploration (2026-10-01)** — recurring testing (monthly/weekly/quarterly cadence) brought to the population via mobile health lab units; research and a standalone framework annex queued
+    
+*   **Future Fund grant $1M+ per participant** (quadrupled from $250K+; full-vision figure, phased funding is the near-term path)
+    
+*   **Remote-first positions; flexible living stipend**; **budget philosophy: fluid with padding (lagniappe)** — income exceeds outgo so participants build their own rolling cushion, and surplus feeds the commons
+    
+*   **Seed program**: 12 starter cohorts of 5–25 in San Diego _city_; **backpay = present-tense relief with documented 20+ year displacement as a prioritization tier, race-neutral** (Evanston suit lesson); **philanthropic privacy** — donors never named
+    
+
+## Evidence base & cost verification
+
+*   Evidence base + addendum filed at `/home/team/shared/docs/evidence-base-case-studies.md` (fidelity scale citable: Stefancic/Tsemberis 2013, DOI captured; UNHCR 2024: $656M+ to 5.3M+ people; Bolsa Família: ~21M families, 8.2M hospitalizations prevented; CERB: $81.64B, press-reported)
+    
+*   Real SD costs filed at `/home/team/shared/docs/sd-cost-verification.md` (HUD FMR studio $2,062/1BR $2,248; utilities ~$290–320; connectivity ~$100–140; cleaning ~$200–500; living wage $30.71/hr; rehab $50–75/sq ft)
+    
+
+## Seed Program & partner outreach (Phase 0)
+
+*   **Partner outreach package filed** at `/home/team/shared/docs/partner-outreach-package.md`: one-paragraph pitch, **seven one-page briefs** (shelter/housing, food, health/FQHC, transit, animal welfare, + Brief G moving/storage; Brief H fleet/leasing/mobility in flight), **21 verified SD partner candidates** with official contact pages (check-dated 2026-09-07; re-verify the week outreach begins), and a what-we-can/cannot-promise box (no funding amounts promised, no funders named per owner privacy directive)
+    
+*   **No real outreach has happened.** Outreach is gated on owner decisions: (1) entity confirmation — fiscal sponsorship → independent 501(c)(3) recommended, counsel must validate; (2) funding mix; (3) Phase-0 go-ahead
+    
+
+## What's next
+
+1.  **Vehicle & Mobility Framework** (in flight, standalone) → then **mobile health lab research** and its standalone framework annex (recurring testing at pocket cadence)
+    
+2.  **Owner decisions to ungate outreach**: entity confirmation → funding mix → Phase-0 go; partner briefs and targets are ready for same-day use once confirmed
+    
+3.  **Pierce framework document** — construction-vs-furnishings master checklist refinements, renovation timeline, modern SD aesthetic, autism + animal accommodations as build specs (master framework drafted at `/home/team/shared/docs/pierce-master-framework.md`)
+    
+4.  **Full RUHBI funding framework** upkeep as funding-mix decision lands (`/home/team/shared/docs/ruhbi-funding-framework.md`)
+    
+5.  **Payroll costing** — close the standing budget gap (staff wages/fringe, including the Movement Coordinator) with a sponsor before Wave 1
+    
+6.  Norm-building: the public case that free housing initiatives are normal, replicable city infrastructure
+    
+
+Discuss plan with leadI've read this plan
+
+## Plan history
+
+*   Version 7CurrentOct 1, 2026 · agent-lead Owner vehicle decision recorded (lease per pocket, unbranded safety vehicle always, shared community pool, ownership option) under the "living and vehicles are separate" principle; Vehicle & Mobility Framework in flight as a standalone doc; DOC 2 + Amendments A/B marked complete; mobile health lab exploration queued.  
+    
+*   Version 6Oct 1, 2026 · agent-lead Adds the owner's new directive (2026-10-01): a dedicated care & education supplies budget so caretakers and educators — kinship caregivers, teachers, professors, trainers, educational staff — never pay for the tools of their work out of pocket; DOC 2 (household & family framework) now in flight with the care-work recognition work.  
+    
+*   Version 5Sep 7, 2026 · agent-lead Seed Program page is live (5th page, Phase 0 status, no orgs shown as committed — verified) and the partner outreach package is filed with 21 verified SD partner candidates; real outreach remains gated on owner entity confirmation. Read & approved  
+    
+*   Version 4Sep 6, 2026 · agent-lead Quadruple directive live on site ($1M+ grant, generational padding, cleaning+connectivity as rights); Navigator expanded to 29 verified resources including 12 wellness-animal entries; Studies page live; real-cost verification validates the quadruple (renovation was 2-3x underpriced).  
+    
+*   Version 3Sep 5, 2026 · agent-lead MVP milestone: 3-page site live and verified (mission, Resource Navigator with 17 verified SD resources, pilot proposal with Living-in-Development track); evidence base for 5 case studies completed and filed; owner directives locked (250K+ grant, remote-first, flexible stipend, lagniappe budget philosophy). Next: studies page, cost verification, funding framework.  
+    
+*   Version 2Sep 3, 2026 · agent-lead Reframed per owner direction: Project Home Key is for everyone — unsheltered people are served first as the proof case, and the goal is making free housing (and the other pillars) a new societal norm, not a niche program.  
+    
+*   Version 1Sep 3, 2026 · agent-lead

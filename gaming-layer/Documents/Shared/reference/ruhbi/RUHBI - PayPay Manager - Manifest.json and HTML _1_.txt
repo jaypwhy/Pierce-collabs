@@ -1,0 +1,97 @@
+manifest.json:
+  
+{
+  "name": "Your App",
+  "short_name": "App",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  // Remove or set: "shown": false
+}  
+  
+  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Web App</title>
+    <!-- Remove "shown" from manifest if present (e.g., in service worker or PWA config) -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <style>
+        /* Your existing CSS or new styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .task-item {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        /* Add more styles as needed */
+    </style>
+</head>
+<body>
+    <!-- INSERT YOUR EXISTING INLINE HTML HERE (e.g., task checklist, forms, etc.) -->
+    <div class="container">
+        <!-- Example: Task Checklist (replace with your generated HTML) -->
+        <h1>Task Manager</h1>
+        <ul class="task-list" id="taskList">
+            <!-- Dynamically generated tasks will appear here -->
+            <li class="task-item">
+                <span>Complete project draft</span>
+                <button onclick="markTaskComplete(this)">✓</button>
+            </li>
+            <li class="task-item">
+                <span>Review code changes</span>
+                <button onclick="markTaskComplete(this)">✓</button>
+            </li>
+        </ul>
+        <!-- INSERT YOUR OTHER HTML COMPONENTS HERE -->
+        <div id="automationSettings">
+            <h2>Automation Rules</h2>
+            <!-- Example: Scheduled automation form -->
+            <form>
+                <label>Name:</label>
+                <input type="text" placeholder="e.g., Daily Report">
+                <label>Schedule (RRULE):</label>
+                <input type="text" placeholder="RRULE:FREQ=DAILY">
+                <button type="submit">Save Automation</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Your existing JavaScript or new logic
+        function markTaskComplete(button) {
+            const taskItem = button.parentElement;
+            taskItem.innerHTML = `<span><s>${taskItem.querySelector('span').textContent}</s></span>`;
+        }
+        // Example: Fetch tasks from API (if applicable)
+        async function loadTasks() {
+            const response = await fetch('/api/tasks');
+            const tasks = await response.json();
+            const taskList = document.getElementById('taskList');
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.innerHTML = `
+                    <span>${task.content}</span>
+                    <button onclick="markTaskComplete(this)">✓</button>
+                `;
+                taskList.appendChild(li);
+            });
+        }
+        // Call the function to load tasks on page load
+        loadTasks();
+    </script>
+</body>
+</html>

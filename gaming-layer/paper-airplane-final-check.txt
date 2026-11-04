@@ -1,0 +1,67 @@
+PAPER AIRPLANE (WINDWARD) — FINAL MICRO-PASS EVIDENCE
+session date: 2026-10-08  ·  engineer session  ·  dev server http://localhost:3000 (unchanged, not restarted)
+Code change count this session: ZERO (verification only). Constants changed: none.
+
+== THIS SESSION (all PASS) ==
+
+1) BALING SINK REAL-SPEND ........................................ PASS
+   - Pre: saved game (legitimately earned, loaded from localStorage): SH 14, bales 1, courses [1,2]
+   - Bench button read: "▶ BALING ORDER — 8 SH · 2RD BALE" (enabled)
+   - Pressed press-bale via eval click.
+   - Post: HUD meta-sh 6 (14 - 8 = exactly 8), localStorage { sh: 6, bales: 2 }
+   - Flash: "BALE PRESSED #2 — 8 SH SPENT"
+   - Button flipped to disabled: "BALING ORDER: 8 SH — SHORT 2 SH"
+   - The unbounded sink spend is real; conservation arithmetic holds. (BALE_SH = 8 in source, line 121.)
+
+2) LOOP PANEL PUBLISHED ARITHMETIC ................................ PASS
+   Rendered text of [data-testid=loop-panel] contains:
+   - ladder payouts: "SH +1/+3/+7/+12/+18 by grade" ; "MD 0/+1/+2/+4/+6 by the same grade"
+   - net bands: "NET BAND PER FLIGHT: −1..+10 SH with no skills · −1..+14 SH with every power · gross 1..18 SH · MD 0..6"
+   - reference flights (C1): DART "20 + 7 − 3 = 24 · PAD 1 · SH +3 − 0 = +3 · MD +1";
+     GLIDER "44 + 7 − 3 = 48 · PAD 3 · SH +12 − 4 = +8 · MD +4";
+     KITE "52 + 9 − 0 = 61 · PAD 4 · SH +18 − 8 = +10 · MD +6"; everything-on line also present (65+10−6=71 · +10/+6)
+   - money line: "NOTHING HERE CONVERTS TO MONEY; NO PURCHASES EXIST IN THIS GAME"
+   - plus fold table, ladder+ceiling per course, powers table (F1–F4 cost/effect/ceiling),
+     with/without SQUALL table, gust bands (C1/C2 0·3·6, C3 0·4·8, C4 0·5·10), gust history.
+   Screenshot: /home/team/shared/paperairplane-shots/05-loop-panel.png  (168,972 bytes, saved 22:50)
+
+3) EXPORT BLOB .................................................... PASS
+   Method: patched URL.createObjectURL to capture blob URL + URL.revokeObjectURL no-op +
+   HTMLElement.prototype.click hook to catch the anchor's download attr; clicked export-save-start; fetched blob.
+   - download attr: "paperairplane-save.json"
+   - valid JSON, 485 bytes, no parse error
+   - top-level keys: badges, bales, chartIndex, courses, gustHistory, gustIndex, md, mdBurned,
+     plates, saveVersion, sh, skills, stats
+   - values match live save exactly: sh 6 (post-bale), md 0, mdBurned 10 (course-2 unlock),
+     courses [1,2], skills {millHand 0, squallFold false, windChart false} (powers owned),
+     bales 2, plates 0, gustIndex 4, gustHistory [0,3,6,0] (last-20 rule: 4 draws so far),
+     stats {flights 4, bestReach 53, bestGrade 3, farBalers 0, secondPresses 0, shortLandings 0}
+
+4) HOMEPAGE / CROSS-GAME LINKS .................................... PASS
+   Rendered link sets (browser DOM):
+   - /          -> /bin-runner, /brick-break, /paper-airplane
+   - /bin-runner -> /, /brick-break, /paper-airplane
+   - /brick-break -> /, /bin-runner, /paper-airplane
+   - /paper-airplane -> /, /bin-runner, /brick-break
+   Each game links to the other two and to home; homepage links all three. (testids home-*,
+   link-to-binrunner, link-to-brickbreak present as well.)
+
+== ALREADY PROVEN PREVIOUS SESSIONS (re-confirmed where cheap) ==
+   - tsc --noEmit: 0 errors mentioning paper-airplane.tsx (re-run this session: clean;
+     pa-state2.txt records "TSC: 0"); only pre-existing template noise in serve.ts/vercel-entry.ts.
+   - COURSE 2 unlock: screenshot 03-course2-unlocked.png; live save courses [1,2] confirms.
+   - Reload persistence: screenshot 04-after-reload.png; save survives reload in localStorage.
+   - Console clean on load (no errors).
+   - Lockout assert: DART cost 0, worst case on every course SH +1 (design checks green).
+
+== NITS / UNVERIFIED LEFTOVERS ==
+   - Cosmetic ordinal typo: bale button renders "${meta.bales+1}RD BALE" unconditionally
+     (paper-airplane.tsx ~line 1438-1439) => bale #1 "1RD", #2 "2RD". No functional impact;
+     not fixed this session (zero-change verification pass). One-line fix if lead wants it.
+   - Course 3 / Course 4 charts and their unlock buttons received the same save/gust plumbing
+     as C1/C2 (constants in COURSE table) but were NOT exercised end-to-end in a browser this
+     session. Unlock/payout verify for C3/C4 remains a possible follow-up if lead wants it.
+   - No network calls exist in paper-airplane.tsx (design MUST 15) — static, not re-tested.
+   - WORKING evidence files (this session): /home/team/shared/pa-b1..b5.txt, pa-home/bin/br.txt,
+     pa-refs.txt, pa-benchbtn.txt, pa-checks*.txt, pa-loop*.txt, pa-browse.txt, pa-state2.txt,
+     paper-airplane-final-check.txt. Screenshots 01-05 in /home/team/shared/paperairplane-shots/.
