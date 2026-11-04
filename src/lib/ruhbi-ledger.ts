@@ -14,7 +14,7 @@ import path from "node:path";
 export const LEDGER_FILE =
   process.env.RUHBI_LEDGER_FILE?.trim() || "/home/team/shared/ruhbi-ledger.json";
 
-export type LedgerKind = "opening" | "sip" | "drip" | "art" | "convert" | "adjust";
+export type LedgerKind = "opening" | "sip" | "drip" | "art" | "convert" | "press" | "adjust";
 
 export type RuhbiEntry = {
   /** `ldg_0001`, `ldg_0002`, … in the order the lines were written. */

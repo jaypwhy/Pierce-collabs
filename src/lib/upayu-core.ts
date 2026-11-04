@@ -9,6 +9,20 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import {
+  PI_BUTTON_PRESSES,
+  PRESS_UPGRADE_COST,
+  PRESS_UPGRADE_UNLOCK_POINTS,
+  blankPressPay,
+  buildPressView,
+  normalisePressPay,
+  openTierIds,
+  pressNet,
+  pressesPerClick,
+  tierById,
+  type PressPayState,
+  type PressView,
+} from "./press-pay-rules";
 import { record } from "./ruhbi-ledger";
 
 /**
@@ -33,7 +47,7 @@ const USER_ID = "pierce";
 const MAX_LEDGER = 40;
 const MAX_PIECES = 12;
 
-export type EntryKind = "sip" | "drip" | "convert" | "art";
+export type EntryKind = "sip" | "drip" | "convert" | "art" | "press";
 
 export type LedgerEntry = {
   id: string;
@@ -61,6 +75,8 @@ export type Account = {
   lastDripAt: string | null;
   pieces: ArtPiece[];
   ledger: LedgerEntry[];
+  /** Press Pay Btn's own record: presses counted, the upgrade, the hidden button. */
+  pressPay: PressPayState;
   updatedAt: string;
 };
 
@@ -77,6 +93,8 @@ export type Snapshot = {
   conversion: { minimumPoints: number; formula: string };
   drip: { points: number; cooldownMs: number; remainingMs: number; ready: boolean };
   ladder: LadderRung[];
+  /** Press Pay Btn — presses, the upgrade and the hidden Pi button. */
+  press: PressView;
 };
 
 export type SnapshotWith = Snapshot & { message?: string; awarded?: number };
@@ -104,6 +122,7 @@ function blankAccount(): Account {
     lastDripAt: null,
     pieces: [],
     ledger: [],
+    pressPay: blankPressPay(),
     updatedAt: nowIso(),
   };
 }
@@ -128,6 +147,7 @@ async function readAccount(): Promise<Account> {
       lastDripAt: typeof source.lastDripAt === "string" ? source.lastDripAt : null,
       pieces: Array.isArray(source.pieces) ? source.pieces.slice(0, MAX_PIECES) : [],
       ledger: Array.isArray(source.ledger) ? source.ledger.slice(0, MAX_LEDGER) : [],
+      pressPay: normalisePressPay(source.pressPay),
     };
   } catch {
     return blankAccount();
@@ -183,6 +203,7 @@ function snapshot(account: Account, extra: { message?: string; awarded?: number 
       ready: remainingMs === 0,
     },
     ladder: PI_LADDER,
+    press: buildPressView(account.pressPay, account.points),
     ...extra,
   };
 }
@@ -378,5 +399,132 @@ export async function saveArtWork(input: {
   return snapshot(account, {
     awarded: result.points,
     message: `Saved — ${result.points} points into your UPayU balance.`,
+  });
+}
+
+/**
+ * Press Pay Btn — a press spends points and returns ten times as many.
+ *
+ * The press itself is the movement: the account goes up by the net, one line
+ * lands in the RUHBI ledger, and the press counter moves. Points only — no
+ * money moves here, whatever the Pi Algo reads the points as.
+ */
+export async function pressPoints(input: { tier?: string } = {}): Promise<SnapshotWith> {
+  const current = await readAccount();
+  const tier = tierById(input.tier);
+  const view = buildPressView(current.pressPay, current.points);
+  const tierView = view.tiers.find((entry) => entry.id === tier.id) ?? view.tiers[0];
+
+  if (!tierView.unlocked) {
+    return fail(
+      current,
+      tier.hiddenUntilPresses !== null
+        ? `The Pi button is not here yet — ${view.pressesToPi.toLocaleString("en-US")} more ${view.pressesToPi === 1 ? "press" : "presses"} to go.`
+        : `That button opens at ${tier.unlockPoints} points — the account holds ${current.points}.`,
+    );
+  }
+
+  if (current.points < tier.cost) {
+    return fail(
+      current,
+      `A press costs ${tier.cost} ${tier.cost === 1 ? "point" : "points"} — the account holds ${current.points}.`,
+    );
+  }
+
+  const counted = pressesPerClick(current.pressPay);
+  const net = pressNet(tier);
+
+  const { account } = await withAccount(
+    (account) => {
+      account.points += net;
+      account.lifetimePoints += tier.pays;
+
+      const press = account.pressPay;
+      press.presses += counted;
+      press.paid += tier.cost;
+      press.earned += tier.pays;
+      press.unlocked = openTierIds(press, account.points);
+      if (press.presses >= PI_BUTTON_PRESSES && !press.piUnlockedAt) {
+        press.piUnlockedAt = nowIso();
+        press.unlocked = openTierIds(press, account.points);
+      }
+
+      account.ledger.unshift({
+        id: newId(),
+        kind: "press",
+        points: net,
+        dollars: 0,
+        note: `${tier.label} · ${tier.cost} in → ${tier.pays} out`,
+        at: nowIso(),
+      });
+      account.ledger = account.ledger.slice(0, MAX_LEDGER);
+    },
+    (account) =>
+      record({
+        account: account.id,
+        kind: "press",
+        points: net,
+        dollars: 0,
+        balanceBefore: account.points - net,
+        balanceAfter: account.points,
+        ref: `press-pay:${tier.id}`,
+        memo: `${tier.label} — ${tier.cost} point${tier.cost === 1 ? "" : "s"} in, ${tier.pays} out`,
+      }).then(() => undefined),
+  );
+
+  return snapshot(account, {
+    awarded: net,
+    message: `+${net} points — ${tier.cost} in, ${tier.pays} out.`,
+  });
+}
+
+/**
+ * Double Your Clicks — 100 points, once. From then on every press counts twice
+ * towards the 1,000 that reveal the Pi button.
+ */
+export async function pressUpgrade(): Promise<SnapshotWith> {
+  const current = await readAccount();
+
+  if (current.pressPay.upgraded) {
+    return snapshot(current, { message: "Double Your Clicks is already on." });
+  }
+  if (current.points < PRESS_UPGRADE_COST) {
+    return fail(
+      current,
+      `Double Your Clicks opens at ${PRESS_UPGRADE_UNLOCK_POINTS} points and costs ${PRESS_UPGRADE_COST} — the account holds ${current.points}.`,
+    );
+  }
+
+  const { account } = await withAccount(
+    (account) => {
+      account.points -= PRESS_UPGRADE_COST;
+      account.pressPay.upgraded = true;
+      account.pressPay.upgradedAt = nowIso();
+      account.pressPay.unlocked = openTierIds(account.pressPay, account.points);
+      account.ledger.unshift({
+        id: newId(),
+        kind: "press",
+        points: -PRESS_UPGRADE_COST,
+        dollars: 0,
+        note: "Double Your Clicks — every press counts twice",
+        at: nowIso(),
+      });
+      account.ledger = account.ledger.slice(0, MAX_LEDGER);
+    },
+    (account) =>
+      record({
+        account: account.id,
+        kind: "press",
+        points: -PRESS_UPGRADE_COST,
+        dollars: 0,
+        balanceBefore: account.points + PRESS_UPGRADE_COST,
+        balanceAfter: account.points,
+        ref: "press-pay:upgrade",
+        memo: "Double Your Clicks — every press counts twice",
+      }).then(() => undefined),
+  );
+
+  return snapshot(account, {
+    message: "Double Your Clicks is on — every press now counts twice.",
   });
 }

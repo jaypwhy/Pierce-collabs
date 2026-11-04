@@ -132,6 +132,12 @@ function Home() {
           >
             Balance
           </Link>
+          <Link
+            to="/press-pay"
+            className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline"
+          >
+            Press Pay Btn
+          </Link>
           <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
             Placeholder concept
           </span>

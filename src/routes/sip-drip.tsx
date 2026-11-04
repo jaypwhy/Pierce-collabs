@@ -146,6 +146,7 @@ function SipDripPage() {
         <nav className="sd-nav">
           <Link to="/balance">Balance</Link>
           <Link to="/art">Art</Link>
+          <Link to="/press-pay">Press Pay</Link>
         </nav>
       </header>
 

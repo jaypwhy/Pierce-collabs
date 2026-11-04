@@ -9,6 +9,8 @@ import {
   PI_ALGO_FORMULA,
   convertPoints,
   dripPoints,
+  pressPoints,
+  pressUpgrade,
   readSnapshot,
   sipPoints,
   type Snapshot,
@@ -37,6 +39,8 @@ export type BalanceData = {
   pieces: number;
   conversion: { minimumPoints: number; formula: string };
   drip: { points: number; cooldownMs: number; remainingMs: number; ready: boolean };
+  /** Press Pay Btn — presses counted, the upgrade, the hidden Pi button. */
+  press: Snapshot["press"];
   recent: Snapshot["account"]["ledger"];
 };
 
@@ -50,6 +54,7 @@ function balanceData(snapshot: Snapshot): BalanceData {
     pieces: snapshot.account.pieces.length,
     conversion: snapshot.conversion,
     drip: snapshot.drip,
+    press: snapshot.press,
     recent: snapshot.account.ledger.slice(0, RECENT_ENTRIES),
   };
 }
@@ -88,6 +93,32 @@ function call(action: string, input: CallInput): Promise<Reply> | Reply {
           : fail("upayu", action, "failed", snapshot.error ?? "Nothing to convert.", 400),
       );
     }
+    case "press": {
+      return pressPoints({ tier: bodyString(input.body, "tier") }).then((snapshot) =>
+        snapshot.ok
+          ? ok("upayu", action, changed(snapshot))
+          : fail(
+              "upayu",
+              action,
+              "failed",
+              snapshot.error ?? "That press did not go through.",
+              400,
+            ),
+      );
+    }
+    case "press-upgrade": {
+      return pressUpgrade().then((snapshot) =>
+        snapshot.ok
+          ? ok("upayu", action, changed(snapshot))
+          : fail(
+              "upayu",
+              action,
+              "failed",
+              snapshot.error ?? "Double Your Clicks did not go through.",
+              400,
+            ),
+      );
+    }
     case "ladder": {
       return readSnapshot().then((snapshot) =>
         ok("upayu", action, {
@@ -107,7 +138,7 @@ function call(action: string, input: CallInput): Promise<Reply> | Reply {
 export const upayuAdapter: ServiceAdapter = {
   name: "upayu",
   status: "live",
-  actions: ["sip", "drip", "balance", "convert", "ladder"],
+  actions: ["sip", "drip", "balance", "convert", "ladder", "press", "press-upgrade"],
   blurb: "The UPayU Bridge — one account, one balance, points converted at the Pi Algo.",
   call,
 };

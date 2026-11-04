@@ -92,6 +92,12 @@ function BalancePage() {
           >
             Sip Drip
           </Link>
+          <Link
+            to="/press-pay"
+            className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline"
+          >
+            Press Pay Btn
+          </Link>
         </div>
       </header>
 
