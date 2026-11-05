@@ -53,15 +53,16 @@ export function fail(
   return { status, envelope: { ok: false, service, action, error: { code, message } } };
 }
 
-/** A service that does not exist yet. Never a 500, never a pretend success. */
-export function notConnected(service: string, action: string): Reply {
-  return fail(
-    service,
-    action,
-    "not_connected",
-    `${service} is not connected yet — this action answers once it lands.`,
-    503,
-  );
+/**
+ * A service that does not exist yet. Never a 500, never a pretend success.
+ *
+ * `detail` is the service's own reason, when it has one worth saying — "the
+ * repository is empty", "the toolkit is still a skeleton" — so the message says
+ * why rather than only that it is missing.
+ */
+export function notConnected(service: string, action: string, detail?: string): Reply {
+  const reason = detail ?? "this action answers once it lands.";
+  return fail(service, action, "not_connected", `${service} is not connected yet — ${reason}`, 503);
 }
 
 export function badRequest(service: string, action: string, message: string): Reply {

@@ -9,11 +9,13 @@
 import { acornTapAdapter } from "./acorn-tap";
 import { artAdapter } from "./art";
 import { fail, type Reply, type ServiceAdapter, type ServiceStatus } from "./envelope";
+import { homeKeyAdapter } from "./home-key";
 import { missionAdapter } from "./mission";
 import { morbraiiAdapter } from "./morbraii";
 import { ruhbiAdapter } from "./ruhbi";
 import { sipDripAdapter } from "./sip-drip";
 import { upayuAdapter } from "./upayu";
+import { worldvolumeAdapter } from "./worldvolume";
 
 export const API_VERSION = "v1";
 
@@ -25,6 +27,8 @@ export const ADAPTERS: ServiceAdapter[] = [
   morbraiiAdapter,
   missionAdapter,
   acornTapAdapter,
+  worldvolumeAdapter,
+  homeKeyAdapter,
 ];
 
 export type ServiceDescription = {
@@ -99,9 +103,14 @@ export async function respond(serviceName: string, action: string, request: Requ
   const adapter = getAdapter(serviceName);
   let reply: Reply;
 
+  // A planned service with no actions yet is reserved, not unknown: it has not
+  // got a surface to call, so any action reaches its adapter and answers
+  // `not_connected` rather than 404.
+  const reserved = adapter?.status === "planned" && adapter.actions.length === 0;
+
   if (!adapter) {
     reply = fail(serviceName, action, "not_found", `No service named "${serviceName}".`, 404);
-  } else if (!adapter.actions.includes(action)) {
+  } else if (!adapter.actions.includes(action) && !reserved) {
     reply = fail(serviceName, action, "not_found", `${serviceName} has no action "${action}".`, 404);
   } else {
     try {
